@@ -91,20 +91,36 @@
     }
     
     // Simular la ruta /delete-files
-    if (urlString.includes('/delete-files/') && options && options.method === 'DELETE') {
-      console.log('StaticRoutes: Interceptada solicitud DELETE a /delete-files');
+    if (urlString.includes('/delete-files/')) {
+      console.log('StaticRoutes: Interceptada solicitud a /delete-files');
       
-      // Extraer el nombre base del archivo de la URL
-      const baseName = urlString.split('/delete-files/')[1];
-      
-      // En entorno estático no podemos eliminar archivos realmente, así que simulamos una respuesta exitosa
-      return new Response(JSON.stringify({
-        success: true,
-        message: `Simulación de eliminación: se simularía eliminar archivos ${baseName}.html y ${baseName}.pdf`
-      }), {
-        status: 200,
-        headers: { 'Content-Type': 'application/json' }
-      });
+      // Verificar que sea método DELETE
+      if (options && options.method === 'DELETE') {
+        // Extraer el nombre base del archivo de la URL
+        const baseName = urlString.split('/delete-files/')[1];
+        
+        // En entorno estático no podemos eliminar archivos realmente, así que simulamos una respuesta exitosa
+        return new Response(JSON.stringify({
+          success: true,
+          message: `Simulación de eliminación: se simularía eliminar archivos ${baseName}.html y ${baseName}.pdf`
+        }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' }
+        });
+      } else {
+        // Si no es DELETE, devolvemos un error adecuado con instrucciones
+        return new Response(JSON.stringify({
+          success: false,
+          error: 'Método no permitido. Usa DELETE para eliminar archivos.',
+          message: 'En el entorno estático, solo se permite el método DELETE para esta ruta.'
+        }), {
+          status: 405,
+          headers: { 
+            'Content-Type': 'application/json',
+            'Allow': 'DELETE'
+          }
+        });
+      }
     }
     
     // Continuar con la solicitud fetch original para otras rutas
