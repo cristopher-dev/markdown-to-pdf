@@ -213,19 +213,43 @@ async function checkExistingDocuments() {
   const noDocumentsEl = document.getElementById('no-documents');
 
   try {
-    const response = await fetch('/list-files'); // Changed from /public-files to /list-files
-    if (!response.ok) throw new Error('Could not retrieve files');
-    const responseData = await response.json();
+    // Verificar si estamos en un entorno de GitHub Pages
+    const isGitHubPages = window.location.hostname.includes('github.io') || 
+                         window.location.hostname.includes('cristopher-dev.com');
 
-    if (!responseData.success || !Array.isArray(responseData.files)) {
-      console.error(
-        'Server response did not contain a valid file list:',
-        responseData
-      );
-      throw new Error('Invalid file response format.');
+    let filesArray = [];
+    
+    if (isGitHubPages) {
+      // En GitHub Pages, usamos una lista predefinida de archivos de ejemplo
+      // o intentamos leer el directorio public si está disponible
+      filesArray = ['README.html', 'README.pdf']; // Archivos de ejemplo predefinidos
+      
+      // Opcional: podrías tener un archivo JSON estático con la lista de archivos
+      try {
+        const staticFilesResponse = await fetch('public/files-list.json');
+        if (staticFilesResponse.ok) {
+          const staticFiles = await staticFilesResponse.json();
+          filesArray = staticFiles.files || filesArray;
+        }
+      } catch (staticError) {
+        console.warn("No se pudo cargar la lista estática de archivos:", staticError);
+      }
+    } else {
+      // En entorno local/servidor, usa la API normal
+      const response = await fetch('/list-files');
+      if (!response.ok) throw new Error('Could not retrieve files');
+      const responseData = await response.json();
+
+      if (!responseData.success || !Array.isArray(responseData.files)) {
+        console.error(
+          'Server response did not contain a valid file list:',
+          responseData
+        );
+        throw new Error('Invalid file response format.');
+      }
+      
+      filesArray = responseData.files;
     }
-
-    const filesArray = responseData.files;
 
     documentsListEl.innerHTML = ''; // Clear list
     let hasDocuments = false;

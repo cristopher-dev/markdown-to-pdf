@@ -15,14 +15,77 @@ document.getElementById('show-example')?.addEventListener('click', async functio
   }
   try {
     const colorBlindMode = document.body.classList.contains('color-blind-mode');
-    const response = await fetch(`/example?colorBlindFriendly=${colorBlindMode}`);
+    
+    // Verificar si estamos en un entorno de GitHub Pages
+    const isGitHubPages = window.location.hostname.includes('github.io') || 
+                         window.location.hostname.includes('cristopher-dev.com');
+                         
+    let result;
+    
+    if (isGitHubPages) {
+      // En GitHub Pages, cargamos el README.md estático desde el repositorio
+      try {
+        const readmeResponse = await fetch('README.md');
+        if (!readmeResponse.ok) {
+          throw new Error(`No se pudo cargar el README.md (Status: ${readmeResponse.status})`);
+        }
+        
+        const readmeContent = await readmeResponse.text();
+        
+        // Mostrar el README como ejemplo
+        // Aquí podríamos usar una librería cliente de markdown para la conversión
+        // Por ejemplo, usando markdown-it si está disponible en el cliente
+        
+        // Para esta solución, simplemente simulamos un resultado exitoso
+        result = {
+          success: true,
+          filename: 'README.md',
+          html: 'public/README.html',
+          pdf: 'public/README.pdf'
+        };
+        
+        // Si tenemos markdown-it cargado en el cliente, podríamos convertir y mostrar el markdown
+        if (window.markdownit) {
+          const md = window.markdownit({
+            html: true,
+            linkify: true,
+            typographer: true,
+            highlight: function(str, lang) {
+              if (window.hljs && lang && window.hljs.getLanguage(lang)) {
+                try {
+                  return window.hljs.highlight(str, { language: lang }).value;
+                } catch (__) {}
+              }
+              return ''; // use external default escaping
+            }
+          });
+          
+          // Podríamos mostrar esto en un modal o en una sección de vista previa
+          const htmlContent = md.render(readmeContent);
+          
+          // Actualizar elemento en la página si existe
+          const previewContainer = document.getElementById('markdown-preview');
+          if (previewContainer) {
+            previewContainer.innerHTML = htmlContent;
+            previewContainer.classList.remove('d-none');
+          }
+        }
+        
+      } catch (readmeError) {
+        throw new Error(`Error al cargar el ejemplo: ${readmeError.message}`);
+      }
+    } else {
+      // En entorno local/servidor, usa la API normal
+      const response = await fetch(`/example?colorBlindFriendly=${colorBlindMode}`);
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => null);
-      throw new Error(errorData?.error || `Could not load example (Status: ${response.status})`);
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => null);
+        throw new Error(errorData?.error || `Could not load example (Status: ${response.status})`);
+      }
+      
+      // The server should now return the filename in the JSON response
+      result = await response.json();
     }
-    // The server should now return the filename in the JSON response
-    const result = await response.json();
 
     if (result.success && result.filename) {
         updateDocumentsList(result.filename, new Date(), true);
