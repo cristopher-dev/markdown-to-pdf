@@ -90,6 +90,23 @@
       });
     }
     
+    // Simular la ruta /delete-files
+    if (urlString.includes('/delete-files/') && options && options.method === 'DELETE') {
+      console.log('StaticRoutes: Interceptada solicitud DELETE a /delete-files');
+      
+      // Extraer el nombre base del archivo de la URL
+      const baseName = urlString.split('/delete-files/')[1];
+      
+      // En entorno estático no podemos eliminar archivos realmente, así que simulamos una respuesta exitosa
+      return new Response(JSON.stringify({
+        success: true,
+        message: `Simulación de eliminación: se simularía eliminar archivos ${baseName}.html y ${baseName}.pdf`
+      }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+    
     // Continuar con la solicitud fetch original para otras rutas
     return originalFetch(url, options);
   };
