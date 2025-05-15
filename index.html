@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Conversor Markdown a PDF</title>
+    <meta
+      name="description"
+      content="Convierte archivos Markdown a PDF con formatos profesionales y código resaltado usando Puppeteer y markdown-it"
+    />
+    <!-- Bootstrap 5 CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <!-- GitHub Markdown CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/5.2.0/github-markdown.min.css"
+    />
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <!-- Highlight.js CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css"
+      id="highlight-theme"
+    />
+    <!-- Estilos personalizados -->
+    <style>
+      body {
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      /* Tema claro */
+      [data-bs-theme='light'] .markdown-body {
+        color: #24292e; /* Color de texto principal de GitHub */
+        background-color: #ffffff;
+      }
+      [data-bs-theme='light'] .bg-light {
+        background-color: #f8f9fa !important; /* Fondo ligeramente más oscuro para contraste */
+      }
+      [data-bs-theme='light'] .text-primary {
+        color: #0d6efd !important;
+      }
+      [data-bs-theme='light'] .btn-primary {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+      }
+      [data-bs-theme='light'] .btn-primary:hover {
+        background-color: #0b5ed7;
+        border-color: #0a58ca;
+      }
+      [data-bs-theme='light'] .btn-outline-secondary {
+        color: #6c757d;
+        border-color: #6c757d;
+      }
+      [data-bs-theme='light'] .btn-outline-secondary:hover {
+        color: #fff;
+        background-color: #6c757d;
+        border-color: #6c757d;
+      }
+      [data-bs-theme='light'] .card {
+        border: 1px solid #dee2e6; /* Borde sutil para las tarjetas */
+      }
+      [data-bs-theme='light'] .list-group-item {
+        border-color: #dee2e6;
+      }
+      [data-bs-theme='light'] .form-control,
+      [data-bs-theme='light'] .form-select {
+        border-color: #ced4da;
+      }
+      [data-bs-theme='light'] .text-muted {
+        color: #6c757d !important;
+      }
+      [data-bs-theme='light'] .border-primary {
+        border-color: #0d6efd !important;
+      }
+      [data-bs-theme='light'] .file-upload.border-dashed {
+        border: 2px dashed #0d6efd; /* Azul primario para tema claro */
+      }
+      [data-bs-theme='light'] .file-upload.border-success {
+        border-color: #198754 !important; /* Verde para éxito en tema claro */
+      }
+      [data-bs-theme='light'] .file-upload.border-info {
+        border-color: #0dcaf0 !important; /* Cian para información en tema claro */
+      }
+      [data-bs-theme='light'] .bg-info-subtle {
+        background-color: #cff4fc !important; /* Fondo sutil cian para tema claro */
+      }
+
+      /* Tema oscuro */
+      [data-bs-theme='dark'] .markdown-body {
+        color: #c9d1d9; /* Color de texto principal de GitHub oscuro */
+        background-color: #0d1117; /* Fondo de GitHub oscuro */
+      }
+      [data-bs-theme='dark'] .bg-light {
+        /* En tema oscuro, .bg-light será un gris oscuro */
+        background-color: #161b22 !important;
+      }
+      [data-bs-theme='dark'] body {
+        background-color: #0d1117;
+        color: #c9d1d9;
+      }
+      [data-bs-theme='dark'] .text-primary {
+        color: #58a6ff !important; /* Azul más brillante para tema oscuro */
+      }
+      [data-bs-theme='dark'] .btn-primary {
+        background-color: #238636; /* Verde GitHub para acciones primarias */
+        border-color: #238636;
+        color: #ffffff;
+      }
+      [data-bs-theme='dark'] .btn-primary:hover {
+        background-color: #2ea043;
+        border-color: #2da043;
+      }
+      [data-bs-theme='dark'] .btn-outline-secondary {
+        color: #8b949e;
+        border-color: #8b949e;
+      }
+      [data-bs-theme='dark'] .btn-outline-secondary:hover {
+        color: #c9d1d9;
+        background-color: #30363d;
+        border-color: #8b949e;
+      }
+      [data-bs-theme='dark'] .card {
+        background-color: #161b22; /* Fondo de tarjeta más oscuro */
+        border: 1px solid #30363d; /* Borde de tarjeta GitHub oscuro */
+      }
+      [data-bs-theme='dark'] .list-group-item {
+        background-color: #0d1117;
+        border-color: #30363d;
+        color: #c9d1d9;
+      }
+      [data-bs-theme='dark'] .list-group-item-action:hover {
+        background-color: #161b22;
+      }
+      [data-bs-theme='dark'] .form-control,
+      [data-bs-theme='dark'] .form-select {
+        background-color: #0d1117;
+        border-color: #30363d;
+        color: #c9d1d9;
+      }
+      [data-bs-theme='dark'] .form-control::placeholder {
+        color: #8b949e;
+      }
+      [data-bs-theme='dark'] .text-muted {
+        color: #8b949e !important;
+      }
+      [data-bs-theme='dark'] .border-primary {
+        border-color: #58a6ff !important;
+      }
+      [data-bs-theme='dark'] .border-bottom {
+        border-bottom-color: #30363d !important;
+      }
+      [data-bs-theme='dark'] .alert-info {
+        background-color: #161b22;
+        color: #58a6ff;
+        border-color: #58a6ff;
+      }
+      [data-bs-theme='dark'] .file-upload.border-dashed {
+        border: 2px dashed #58a6ff; /* Azul brillante para tema oscuro */
+      }
+      [data-bs-theme='dark'] .file-upload.border-success {
+        border-color: #238636 !important; /* Verde para éxito en tema oscuro */
+      }
+      [data-bs-theme='dark'] .file-upload.border-info {
+        border-color: #388bfd !important; /* Azul más brillante para información en tema oscuro */
+      }
+      [data-bs-theme='dark'] .bg-info-subtle {
+        background-color: #0c2d6b !important; /* Fondo sutil azul oscuro para tema oscuro */
+      }
+      /* Los estilos de highlight.js se manejan dinámicamente con JavaScript */
+
+      .cursor-pointer {
+        cursor: pointer;
+      }
+
+      .file-upload {
+        transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+      }
+      .file-upload.border-dashed {
+        border-style: dashed;
+      }
+
+      #status-indicator {
+        font-size: 0.9rem;
+      }
+      #last-update {
+        font-weight: bold;
+      }
+      .btn-circle {
+        width: 48px;
+        height: 48px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    </style>
+    <!-- Bootstrap 5 JS Bundle con Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- highlight.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+  </head>
+  <body class="bg-light">
+    <!-- bg-light se adaptará al tema -->
+    <!-- Botones flotantes para cambios de tema -->
+    <div class="position-fixed top-0 end-0 p-3" style="z-index: 1050">
+      <button id="theme-toggle" class="btn btn-primary btn-circle shadow mb-2" title="Cambiar tema">
+        <i class="fas fa-moon"></i>
+      </button>
+    </div>
+
+    <div class="container py-4 markdown-body">
+      <!-- markdown-body para estilos de GitHub -->
+      <header class="text-center mb-5">
+        <h1 class="text-primary fw-bold mb-3">
+          <i class="fas fa-file-pdf me-2"></i>Conversor Markdown a PDF
+        </h1>
+        <p class="lead text-muted">
+          Convierte tus archivos Markdown en documentos PDF profesionales y con estilo.
+        </p>
+      </header>
+
+      <div
+        id="status-indicator"
+        class="alert alert-secondary d-flex align-items-center justify-content-center gap-2 mb-4 shadow-sm"
+      >
+        <i class="fas fa-info-circle text-primary"></i>
+        <p class="m-0">
+          Última actualización del sitio: <span id="last-update" class="fw-semibold"></span>
+        </p>
+      </div>
+
+      <section id="upload-section" class="mb-5">
+        <h2 class="mt-5 mb-3 pb-2 border-bottom text-primary">
+          <i class="fas fa-upload me-2"></i> Sube tu archivo Markdown
+        </h2>
+        <div class="card shadow-sm p-4">
+          <form id="upload-form" enctype="multipart/form-data" class="d-flex flex-column gap-3">
+            <div
+              class="file-upload border border-2 border-primary rounded-3 bg-light border-dashed position-relative"
+            >
+              <input
+                type="file"
+                id="markdown-file"
+                name="markdown-file"
+                accept=".md"
+                required
+                class="form-control opacity-0 position-absolute top-0 start-0 w-100 h-100 cursor-pointer z-2"
+              />
+              <div
+                class="text-center p-4 d-flex flex-column align-items-center justify-content-center"
+              >
+                <i class="fas fa-file-alt fs-1 text-primary mb-3"></i>
+                <p id="file-name-display" class="mb-0 text-muted">
+                  Arrastra tu archivo Markdown aquí o haz clic para seleccionar
+                </p>
+              </div>
+            </div>
+
+            <div id="markdown-preview" class="card p-3 d-none border-info">
+              <h4 class="card-header bg-transparent border-bottom border-info text-primary">
+                <i class="fas fa-eye me-2"></i> Vista previa del Markdown
+              </h4>
+              <div
+                id="preview-content"
+                class="card-body"
+                style="max-height: 200px; overflow-y: auto"
+              ></div>
+            </div>
+
+            <div class="card shadow-sm d-none" id="settings-panel">
+              <div class="card-header bg-transparent">
+                <button
+                  type="button"
+                  class="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-between"
+                  id="toggle-settings"
+                  aria-expanded="false"
+                  aria-controls="settings-content"
+                >
+                  <span><i class="fas fa-cog me-2"></i> Opciones avanzadas</span>
+                  <i class="fas fa-chevron-down"></i>
+                </button>
+              </div>
+              <div id="settings-content" class="card-body d-none">
+                <h5 class="card-title">
+                  <i class="fas fa-cogs me-2"></i>Opciones de Conversión
+                </h5>
+                <div class="mb-3">
+                  <label for="page-size" class="form-label">Tamaño de Página</label>
+                  <select class="form-select" id="page-size">
+                    <option value="A4" selected>A4</option>
+                    <option value="Letter">Letter</option>
+                    <option value="A3">A3</option>
+                    <option value="A5">A5</option>
+                    <option value="Legal">Legal</option>
+                    <option value="Tabloid">Tabloid</option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label for="theme-select" class="form-label">Tema de Resaltado de Código</label>
+                  <select class="form-select" id="theme-select">
+                    <option value="github" data-light="github.min.css" data-dark="github-dark.min.css">GitHub</option>
+                    <option value="atom-one-dark" data-light="atom-one-dark.min.css" data-dark="atom-one-dark.min.css">Atom One Dark (Requiere CSS oscuro)</option>
+                    <option value="default" data-light="default.min.css" data-dark="default.min.css">Default</option>
+                    <option value="stackoverflow-light" data-light="stackoverflow-light.min.css" data-dark="stackoverflow-dark.min.css">StackOverflow Light/Dark</option>
+                  </select>
+                </div>
+
+                <hr class="my-4">
+                <h6 class="text-muted mb-3">Nuevas Opciones de PDF</h6>
+
+                <div class="mb-3">
+                  <label for="page-orientation" class="form-label">Orientación de Página</label>
+                  <select class="form-select" id="page-orientation">
+                    <option value="portrait" selected>Vertical (Portrait)</option>
+                    <option value="landscape">Horizontal (Landscape)</option>
+                  </select>
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Márgenes (mm)</label>
+                  <div class="row g-2">
+                    <div class="col">
+                      <input type="number" class="form-control" id="margin-top" placeholder="Superior" title="Margen Superior (mm)">
+                    </div>
+                    <div class="col">
+                      <input type="number" class="form-control" id="margin-bottom" placeholder="Inferior" title="Margen Inferior (mm)">
+                    </div>
+                    <div class="col">
+                      <input type="number" class="form-control" id="margin-left" placeholder="Izquierdo" title="Margen Izquierdo (mm)">
+                    </div>
+                    <div class="col">
+                      <input type="number" class="form-control" id="margin-right" placeholder="Derecho" title="Margen Derecho (mm)">
+                    </div>
+                  </div>
+                </div>
+
+                <div class="mb-3">
+                  <label for="custom-css" class="form-label">CSS Personalizado</label>
+                  <textarea class="form-control" id="custom-css" rows="4" placeholder="/* Tu CSS personalizado aquí */\n/* Ejemplo: body { font-family: 'Arial', sans-serif; } */"></textarea>
+                </div>
+
+                <div class="mb-3">
+                  <label for="header-template" class="form-label">Plantilla de Encabezado (HTML)</label>
+                  <textarea class="form-control" id="header-template" rows="3" placeholder="<div style=\'\'\'font-size: 8px; width: 100%; text-align: center;\'\'\'><span class=\'\'\'date\'\'\'></span> - <span class=\'\'\'title\'\'\'></span></div>"></textarea>
+                  <small class="form-text text-muted">Clases disponibles: 'date', 'title', 'url', 'pageNumber', 'totalPages'.</small>
+                </div>
+
+                <div class="mb-3">
+                  <label for="footer-template" class="form-label">Plantilla de Pie de Página (HTML)</label>
+                  <textarea class="form-control" id="footer-template" rows="3" placeholder="<div style=\'\'\'font-size: 8px; width: 100%; text-align: center;\'\'\'><span class=\'\'\'pageNumber\'\'\'></span> / <span class=\'\'\'totalPages\'\'\'></span></div>"></textarea>
+                  <small class="form-text text-muted">Mismas clases que el encabezado.</small>
+                </div>
+
+                <div class="d-flex justify-content-end gap-2 mt-4">
+                  <button type="button" class="btn btn-outline-secondary btn-sm" id="reset-options-btn"><i class="fas fa-undo me-1"></i> Restablecer</button>
+                  <button type="button" class="btn btn-primary btn-sm" id="save-options-btn"><i class="fas fa-save me-1"></i> Guardar Preferencias</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="d-flex flex-wrap gap-3 align-items-center mt-3">
+              <button type="submit" class="btn btn-primary btn-lg">
+                <i class="fas fa-file-pdf me-2"></i> Convertir a PDF
+              </button>
+              <button type="button" id="settings-btn" class="btn btn-outline-secondary">
+                <i class="fas fa-cog me-2"></i> Opciones
+              </button>
+              <div id="loading" class="d-none align-items-center gap-2">
+                <div class="spinner-border spinner-border-sm text-primary" role="status">
+                  <span class="visually-hidden">Cargando...</span>
+                </div>
+                <span id="processing-status" class="text-muted">Procesando...</span>
+              </div>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section id="documents-section" class="mb-5">
+        <h2 class="mt-5 mb-3 border-bottom pb-2 text-primary">
+          <i class="fas fa-folder-open me-2"></i> Documentos Convertidos
+        </h2>
+        <div id="no-documents" class="text-center py-5 text-muted">
+          <i class="fas fa-file-excel fs-1 mb-3 d-block text-primary opacity-50"></i>
+          <p>Aún no has convertido ningún documento.</p>
+          <p>Sube un archivo Markdown para empezar.</p>
+          <button id="show-example" class="btn btn-primary mt-3">
+            <i class="fas fa-lightbulb me-2"></i> Cargar Ejemplo (README.md)
+          </button>
+        </div>
+        <div class="list-group d-none" id="documents-list">
+          <!-- Los documentos se añadirán aquí dinámicamente -->
+        </div>
+      </section>
+
+      <footer class="mt-5 pt-4 border-top text-center text-muted">
+        <p>
+          Código fuente disponible en
+          <a href="https://github.com/USUARIO/REPOSITORIO" target="_blank" class="link-primary"
+            >GitHub</a
+          >.
+        </p>
+        <p class="small">
+          <i class="fas fa-sync-alt me-1"></i> Este sitio se actualiza automáticamente.
+        </p>
+      </footer>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/script.js"></script>
+  </body>
+</html>
