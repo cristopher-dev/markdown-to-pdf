@@ -1,0 +1,104 @@
+name: Convert Markdown to PDF
+
+on:
+  push:
+    branches:
+      - master
+    paths:
+      - '**.md'
+      - 'css/custom-styles.css'
+      - 'css/style.css'
+      - '.github/workflows/convert-markdown.yml'
+
+jobs:
+  convert:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies and prepare environment
+        run: |
+          npm ci
+          # Asegurarse de que el directorio css existe
+          mkdir -p css
+          # Si no existe style.css, crearlo
+          if [ ! -f "css/style.css" ]; then
+            echo "Creando css/style.css"
+            cp css/custom-styles.css css/style.css || echo "/* Base styles */" > css/style.css
+          fi
+          # Si no existe custom-styles.css, crearlo
+          if [ ! -f "css/custom-styles.css" ]; then
+            echo "Creando css/custom-styles.css"
+            echo "/* Custom styles for Markdown to PDF */" > css/custom-styles.css
+          fi
+        
+      - name: Convert Markdown to PDF
+        run: |
+          # Listamos qué archivos .md se han cambiado para procesarlos
+          CHANGED_FILES=$(git diff --name-only HEAD~1 HEAD | grep '\.md$' || echo "README.md")
+          
+          # Si no hay ningún archivo .md modificado, usamos README.md
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No se han encontrado archivos Markdown modificados. Usando README.md como archivo predeterminado."
+            CHANGED_FILES="README.md"
+          fi
+          
+          # Procesar cada archivo modificado
+          for FILE in $CHANGED_FILES; do
+            if [ -f "$FILE" ]; then
+              echo "Convirtiendo $FILE a PDF..."
+              BASE_NAME=$(basename "$FILE" .md)
+              
+              # Usar node para convertir directamente sin copiar a text.md
+              # Usar el script convert.js directamente con el archivo como argumento
+              node convert.js "$FILE" "output"
+              
+              # Renombrar los archivos de salida para evitar sobreescrituras
+              mv output.pdf "deploy/${BASE_NAME}.pdf" 2>/dev/null || echo "No se pudo mover output.pdf"
+              mv output.html "deploy/${BASE_NAME}.html" 2>/dev/null || echo "No se pudo mover output.html"
+            else
+              echo "Advertencia: $FILE no existe en el repositorio."
+            fi
+          done
+        
+      - name: Set up deployment folder
+        run: |
+          # Crear el directorio de despliegue si no existe
+          mkdir -p deploy
+          
+          # Copiar los archivos CSS
+          mkdir -p deploy/css
+          cp -r css/* deploy/css/ 2>/dev/null || echo "No se pudieron copiar los archivos CSS"
+          
+          # Copiar todos los archivos Markdown
+          find . -name "*.md" -maxdepth 1 -exec cp {} deploy/ \; 2>/dev/null || echo "No se pudieron copiar los archivos Markdown"
+          
+          # Copiar index.html
+          cp index.html deploy/ 2>/dev/null || echo "No se pudo copiar index.html"
+          
+          # Copiar archivos de script JavaScript si existen
+          if [ -d "js" ]; then
+            mkdir -p deploy/js
+            cp -r js/* deploy/js/ 2>/dev/null || echo "No se pudieron copiar los archivos JavaScript"
+          fi
+          
+          # Verificar qué archivos se han copiado al directorio de despliegue
+          echo "Contenido del directorio de despliegue:"
+          ls -la deploy
+          
+      - name: Add timestamp to index.html
+        run: |
+          TIMESTAMP="Última actualización: $(date '+%d/%m/%Y %H:%M:%S')"
+          sed -i "s|<span id=\"last-update\"[^>]*>.*</span>|<span id=\"last-update\">$TIMESTAMP</span>|g" deploy/index.html
+          
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./deploy
