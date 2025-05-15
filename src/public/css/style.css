@@ -1,0 +1,318 @@
+/* filepath: /home/markdown-to-pdf/css/style.css */
+body {
+  transition: background-color 0.3s, color 0.3s;
+}
+
+/* Cristopher theme */
+[data-bs-theme='cristopher'] .markdown-body {
+  color: #ffffff;
+  background-color: #0D3A54;
+}
+[data-bs-theme='cristopher'] .markdown-body pre {
+  background-color: #12506F !important;
+  border: 1px solid #0D8ABC !important;
+}
+[data-bs-theme='cristopher'] .markdown-body code {
+  background-color: #12506F !important;
+  color: #a8d8ee !important;
+}
+[data-bs-theme='cristopher'] .bg-light {
+  background-color: #0D3A54 !important;
+}
+[data-bs-theme='cristopher'] body {
+  background-color: #0D3A54;
+  color: #ffffff;
+}
+[data-bs-theme='cristopher'] .text-primary {
+  color: #0D8ABC !important;
+}
+[data-bs-theme='cristopher'] .btn-primary {
+  background-color: #0D8ABC;
+  border-color: #0D8ABC;
+  color: #ffffff;
+}
+[data-bs-theme='cristopher'] .btn-primary:hover {
+  background-color: #0A6D8C;
+  border-color: #095E7A;
+}
+[data-bs-theme='cristopher'] .card {
+  background-color: #12506F;
+  border: 1px solid #0D8ABC;
+}
+[data-bs-theme='cristopher'] .list-group-item {
+  background-color: #12506F;
+  border-color: #0D8ABC;
+  color: #ffffff;
+}
+[data-bs-theme='cristopher'] .form-control,
+[data-bs-theme='cristopher'] .form-select {
+  background-color: #12506F;
+  border-color: #0D8ABC;
+  color: #ffffff;
+}
+[data-bs-theme='cristopher'] .text-muted {
+  color: #a8d8ee !important;
+}
+[data-bs-theme='cristopher'] a.link-secondary,
+[data-bs-theme='cristopher'] a.link-primary {
+  color: #ffffff !important;
+  text-decoration: none;
+  border-bottom: 1px solid #0D8ABC;
+  transition: all 0.2s ease;
+}
+[data-bs-theme='cristopher'] a.link-secondary:hover,
+[data-bs-theme='cristopher'] a.link-primary:hover {
+  color: #0D8ABC !important;
+  border-bottom-color: #ffffff;
+}
+[data-bs-theme='cristopher'] .border-primary {
+  border-color: #0D8ABC !important;
+}
+[data-bs-theme='cristopher'] .file-upload.border-dashed {
+  border: 2px dashed #0D8ABC;
+}
+[data-bs-theme='cristopher'] .file-upload.border-success {
+  border-color: #198754 !important;
+}
+[data-bs-theme='cristopher'] .file-upload.border-info {
+  border-color: #0dcaf0 !important;
+}
+[data-bs-theme='cristopher'] .dropdown-menu {
+  background-color: #12506F;
+  border-color: #0D8ABC;
+}
+[data-bs-theme='cristopher'] .dropdown-item {
+  color: #ffffff;
+}
+[data-bs-theme='cristopher'] .dropdown-item:hover {
+  background-color: #0D8ABC;
+  color: #ffffff;
+}
+[data-bs-theme='cristopher'] .dropdown-header {
+  color: #a8d8ee;
+}
+[data-bs-theme='cristopher'] .btn-primary {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+[data-bs-theme='cristopher'] .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
+}
+[data-bs-theme='cristopher'] .alert-primary {
+  background-color: #0D8ABC;
+  border-color: #0A6D8C;
+  color: #ffffff;
+}
+
+/* Light theme */
+[data-bs-theme='light'] .markdown-body {
+  color: #24292e; /* GitHub main text color */
+  background-color: #ffffff;
+}
+[data-bs-theme='light'] .bg-light {
+  background-color: #f8f9fa !important; /* Slightly darker background for contrast */
+}
+[data-bs-theme='light'] .text-primary {
+  color: #0d6efd !important;
+}
+[data-bs-theme='light'] .btn-primary {
+  background-color: #0D8ABC; /* Color personalizado de Cristopher Martinez */
+  border-color: #0D8ABC;
+}
+[data-bs-theme='light'] .btn-primary:hover {
+  background-color: #0A6D8C;
+  border-color: #095E7A;
+}
+[data-bs-theme='light'] .btn-outline-secondary {
+  color: #6c757d;
+  border-color: #6c757d;
+}
+[data-bs-theme='light'] .btn-outline-secondary:hover {
+  color: #fff;
+  background-color: #6c757d;
+  border-color: #6c757d;
+}
+[data-bs-theme='light'] .card {
+  border: 1px solid #dee2e6; /* Subtle border for cards */
+}
+[data-bs-theme='light'] .list-group-item {
+  border-color: #dee2e6;
+}
+[data-bs-theme='light'] .form-control,
+[data-bs-theme='light'] .form-select {
+  border-color: #ced4da;
+}
+[data-bs-theme='light'] .text-muted {
+  color: #6c757d !important;
+}
+[data-bs-theme='light'] .border-primary {
+  border-color: #0d6efd !important;
+}
+[data-bs-theme='light'] .file-upload.border-dashed {
+  border: 2px dashed #0d6efd; /* Primary blue for light theme */
+}
+[data-bs-theme='light'] .file-upload.border-success {
+  border-color: #198754 !important; /* Green for success in light theme */
+}
+[data-bs-theme='light'] .file-upload.border-info {
+  border-color: #0dcaf0 !important; /* Cyan for info in light theme */
+}
+[data-bs-theme='light'] .bg-info-subtle {
+  background-color: #cff4fc !important; /* Subtle cyan background for light theme */
+}
+
+/* Dark theme */
+[data-bs-theme='dark'] .markdown-body {
+  color: #c9d1d9; /* GitHub dark main text color */
+  background-color: #0d1117; /* GitHub dark background */
+}
+[data-bs-theme='dark'] .bg-light {
+  /* In dark theme, .bg-light will be dark gray */
+  background-color: #161b22 !important;
+}
+[data-bs-theme='dark'] body {
+  background-color: #0d1117;
+  color: #c9d1d9;
+}
+[data-bs-theme='dark'] .text-primary {
+  color: #58a6ff !important; /* Brighter blue for dark theme */
+}
+[data-bs-theme='dark'] .btn-primary {
+  background-color: #0D8ABC; /* Color personalizado de Cristopher Martinez */
+  border-color: #0D8ABC;
+  color: #ffffff;
+}
+[data-bs-theme='dark'] .btn-primary:hover {
+  background-color: #0A6D8C;
+  border-color: #095E7A;
+}
+[data-bs-theme='dark'] .btn-outline-secondary {
+  color: #8b949e;
+  border-color: #8b949e;
+}
+[data-bs-theme='dark'] .btn-outline-secondary:hover {
+  color: #c9d1d9;
+  background-color: #30363d;
+  border-color: #8b949e;
+}
+[data-bs-theme='dark'] .card {
+  background-color: #161b22; /* Darker card background */
+  border: 1px solid #30363d; /* GitHub dark card border */
+}
+[data-bs-theme='dark'] .list-group-item {
+  background-color: #0d1117;
+  border-color: #30363d;
+  color: #c9d1d9;
+}
+[data-bs-theme='dark'] .list-group-item-action:hover {
+  background-color: #161b22;
+}
+[data-bs-theme='dark'] .form-control,
+[data-bs-theme='dark'] .form-select {
+  background-color: #0d1117;
+  border-color: #30363d;
+  color: #c9d1d9;
+}
+[data-bs-theme='dark'] .form-control::placeholder {
+  color: #8b949e;
+}
+[data-bs-theme='dark'] .text-muted {
+  color: #8b949e !important;
+}
+[data-bs-theme='dark'] .border-primary {
+  border-color: #58a6ff !important;
+}
+[data-bs-theme='dark'] .border-bottom {
+  border-bottom-color: #30363d !important;
+}
+[data-bs-theme='dark'] .alert-info {
+  background-color: #161b22;
+  color: #58a6ff;
+  border-color: #58a6ff;
+}
+[data-bs-theme='dark'] .file-upload.border-dashed {
+  border: 2px dashed #58a6ff; /* Bright blue for dark theme */
+}
+[data-bs-theme='dark'] .file-upload.border-success {
+  border-color: #238636 !important; /* Green for success in dark theme */
+}
+[data-bs-theme='dark'] .file-upload.border-info {
+  border-color: #388bfd !important; /* Brighter blue for info in dark theme */
+}
+[data-bs-theme='dark'] .bg-info-subtle {
+  background-color: #0c2d6b !important; /* Subtle dark blue background for dark theme */
+}
+/* highlight.js styles are handled dynamically with JavaScript */
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.file-upload {
+  transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+.file-upload.border-dashed {
+  border-style: dashed;
+}
+
+#status-indicator {
+  font-size: 0.9rem;
+}
+#last-update {
+  font-weight: bold;
+}
+.btn-circle {
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+/* Theme selector styles */
+.theme-option.active {
+  background-color: rgba(13, 110, 253, 0.1);
+  font-weight: bold;
+}
+
+[data-bs-theme='dark'] .theme-option.active {
+  background-color: rgba(88, 166, 255, 0.2);
+}
+
+/* Author section styles */
+footer h5 {
+  font-weight: 600;
+}
+
+footer .img-thumbnail {
+  transition: transform 0.3s ease;
+  border: 3px solid #0d6efd;
+}
+
+[data-bs-theme='dark'] footer .img-thumbnail {
+  border-color: #58a6ff;
+}
+
+footer .img-thumbnail:hover {
+  transform: scale(1.05);
+}
+
+footer .social-links a {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+footer .social-links a:hover {
+  transform: translateY(-3px);
+  opacity: 0.8;
+}
+
+[data-bs-theme='dark'] footer {
+  border-top-color: #30363d !important;
+}
+
+[data-bs-theme='dark'] footer a.link-primary {
+  color: #58a6ff !important;
+}

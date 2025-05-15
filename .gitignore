@@ -23,6 +23,7 @@ yarn-error.log*
 # Carpetas generadas
 /public/*
 /uploads/*
+/test_outputs/*
 
 # Mantener estructura de carpetas
 !public/.gitkeep
@@ -31,6 +32,3 @@ yarn-error.log*
 # Archivos del sistema
 .DS_Store
 Thumbs.db
-text.md
-output.html
-output.pdf

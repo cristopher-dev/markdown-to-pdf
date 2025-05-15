@@ -1,6 +1,7 @@
-// Inicialización de los tooltips de Bootstrap
+// filepath: /home/markdown-to-pdf/js/script.js
+// Bootstrap tooltips initialization
 document.addEventListener('DOMContentLoaded', function () {
-  // Inicializar tooltips
+  // Initialize tooltips
   var tooltipTriggerList = [].slice.call(
     document.querySelectorAll('[data-bs-toggle="tooltip"]')
   );
@@ -8,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
     return new bootstrap.Tooltip(tooltipTriggerEl);
   });
 
-  // Mostrar la fecha y hora actual como última actualización
+  // Show current date and time as last update
   const now = new Date();
   const lastUpdateEl = document.getElementById('last-update');
   if (lastUpdateEl) {
@@ -23,10 +24,10 @@ document.addEventListener('DOMContentLoaded', function () {
       now.toLocaleTimeString();
   }
 
-  // Cargar documentos existentes
+  // Load existing documents
   checkExistingDocuments();
 
-  // Toggle para el panel de configuración avanzada (dentro del panel de opciones)
+  // Toggle for advanced configuration panel (inside options panel)
   const toggleSettingsButton = document.getElementById('toggle-settings');
   const settingsContent = document.getElementById('settings-content');
 
@@ -45,7 +46,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   }
 
-  // Toggle para el botón principal de "Opciones" que muestra/oculta el panel de settings
+  // Toggle for the main "Options" button that shows/hides the settings panel
   const settingsBtn = document.getElementById('settings-btn');
   const settingsPanel = document.getElementById('settings-panel');
 
@@ -58,10 +59,10 @@ document.addEventListener('DOMContentLoaded', function () {
     settingsBtn.setAttribute('aria-controls', 'settings-panel');
   }
 
-  // Cargar opciones guardadas al inicio
+  // Load saved options on startup
   loadOptions();
 
-  // Listeners para botones de guardar y resetear opciones
+  // Listeners for save and reset options buttons
   const saveBtn = document.getElementById('save-options-btn');
   if (saveBtn) {
     saveBtn.addEventListener('click', saveOptions);
@@ -73,59 +74,89 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 });
 
-// Control de tema claro/oscuro
+// Options to save/load - DECLARE EARLIER
+const optionsToSave = [
+  { id: 'page-size', type: 'value' },
+  { id: 'theme-select', type: 'value' },
+  { id: 'page-orientation', type: 'value' },
+  { id: 'margin-top', type: 'value' },
+  { id: 'margin-bottom', type: 'value' },
+  { id: 'margin-left', type: 'value' },
+  { id: 'margin-right', type: 'value' },
+  { id: 'custom-css', type: 'value' },
+  { id: 'header-template', type: 'value' },
+  { id: 'footer-template', type: 'value' },
+];
+
+// Theme control (light/dark/auto)
 const themeToggle = document.getElementById('theme-toggle');
+const themeOptions = document.querySelectorAll('.theme-option');
 const themeIcon = themeToggle.querySelector('i');
 const htmlElement = document.documentElement;
-const highlightLink = document.getElementById('highlight-theme');
-const themeSelect = document.getElementById('theme-select');
 
 function updateHighlightTheme(selectedThemeOption, currentBsTheme) {
-  const cssFile =
-    currentBsTheme === 'dark'
-      ? selectedThemeOption.dataset.dark
-      : selectedThemeOption.dataset.light;
-  highlightLink.setAttribute(
-    'href',
-    `https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/${cssFile}`
-  );
+  // Esta función ya no es necesaria o necesitaría una reescritura completa si se mantiene highlight.js sin temas dinámicos.
+  // Por ahora, la eliminamos o la dejamos vacía si alguna parte de la lógica aún la llama.
+  // console.log("updateHighlightTheme llamada pero la funcionalidad de temas de highlight.js ha sido eliminada.");
 }
 
 function applyThemeSetting(theme) {
-  // theme is 'light' or 'dark'
-  htmlElement.setAttribute('data-bs-theme', theme);
-  localStorage.setItem('theme', theme);
-  themeIcon.className = theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
-  // Actualizar el tema de highlight.js si ya se ha seleccionado uno
-  const selectedHighlightTheme = themeSelect.options[themeSelect.selectedIndex];
-  if (selectedHighlightTheme && selectedHighlightTheme.value !== '') {
-    updateHighlightTheme(selectedHighlightTheme, theme);
+  // Determine the theme to apply
+  // For 'auto', check system preference
+  const effectiveTheme = theme === 'auto' 
+    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') 
+    : theme;
+  
+  // Apply theme to document
+  htmlElement.setAttribute('data-bs-theme', effectiveTheme);
+  localStorage.setItem('theme', theme); // Store user preference (light/dark/auto/cristopher)
+  
+  // Update theme toggle icon based on current effective theme
+  if (themeToggle && themeIcon) { // Ensure elements exist
+    if (theme === 'auto') {
+      themeIcon.className = 'fas fa-magic';
+    } else if (theme === 'cristopher') {
+      themeIcon.className = 'fas fa-star'; // Corrected icon for Cristopher theme
+    } else {
+      themeIcon.className = effectiveTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+    }
   }
+  
+  // Update the active state in dropdown menu
+  themeOptions.forEach(option => {
+    if (option.dataset.theme === theme) {
+      option.classList.add('active');
+    } else {
+      option.classList.remove('active');
+    }
+  });
 }
 
-// Verificar si hay una preferencia de tema guardada o del sistema
+// Register listeners for system color scheme changes
+const systemDarkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+systemDarkModeMediaQuery.addEventListener('change', (e) => {
+  const currentTheme = localStorage.getItem('theme') || 'auto';
+  if (currentTheme === 'auto') {
+    applyThemeSetting('auto'); // Re-apply auto theme when system preference changes
+  }
+});
+
+// Check if there's a saved theme preference or default to auto
 let initialTheme = localStorage.getItem('theme');
 if (!initialTheme) {
-  initialTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  initialTheme = 'auto'; // Default to auto theme if not set
 }
-applyThemeSetting(initialTheme); // Aplicar tema inicial
+applyThemeSetting(initialTheme); // Apply initial theme
 
-themeToggle.addEventListener('click', () => {
-  const currentTheme = htmlElement.getAttribute('data-bs-theme');
-  applyThemeSetting(currentTheme === 'dark' ? 'light' : 'dark');
+// Theme dropdown option click handler
+themeOptions.forEach(option => {
+  option.addEventListener('click', function() {
+    const selectedTheme = this.dataset.theme;
+    applyThemeSetting(selectedTheme);
+  });
 });
 
-// Cambiar tema de highlight.js cuando se selecciona uno nuevo
-themeSelect.addEventListener('change', function () {
-  const selectedOption = this.options[this.selectedIndex];
-  if (selectedOption.value) {
-    localStorage.setItem('highlightJsTheme', selectedOption.value);
-    const currentBsTheme = htmlElement.getAttribute('data-bs-theme') || 'light';
-    updateHighlightTheme(selectedOption, currentBsTheme);
-  }
-});
-
-// Mostrar el nombre del archivo seleccionado y cambiar estilo del área de carga
+// Display selected filename and change upload area style
 const markdownFileInput = document.getElementById('markdown-file');
 const fileNameDisplay = document.getElementById('file-name-display');
 const fileUploadArea = document.querySelector('.file-upload');
@@ -143,33 +174,33 @@ markdownFileInput.addEventListener('change', function (e) {
     );
   } else {
     fileNameDisplay.textContent =
-      'Arrastra tu archivo Markdown aquí o haz clic para seleccionar';
+      'Drag your Markdown file here or click to select';
     fileUploadArea.classList.remove('border-success', 'border-info', 'bg-info-subtle');
     fileUploadArea.classList.add('border-primary', 'bg-light');
   }
 });
 
-// Función para verificar y cargar documentos existentes
+// Function to check and load existing documents
 async function checkExistingDocuments() {
   const documentsListEl = document.getElementById('documents-list');
   const noDocumentsEl = document.getElementById('no-documents');
 
   try {
-    const response = await fetch('/list-files'); // Cambiado de /public-files a /list-files
-    if (!response.ok) throw new Error('No se pudieron obtener los archivos');
+    const response = await fetch('/list-files'); // Changed from /public-files to /list-files
+    if (!response.ok) throw new Error('Could not retrieve files');
     const responseData = await response.json();
 
     if (!responseData.success || !Array.isArray(responseData.files)) {
       console.error(
-        'La respuesta del servidor no contenía una lista de archivos válida:',
+        'Server response did not contain a valid file list:',
         responseData
       );
-      throw new Error('Formato de respuesta de archivos no válido.');
+      throw new Error('Invalid file response format.');
     }
 
     const filesArray = responseData.files;
 
-    documentsListEl.innerHTML = ''; // Limpiar lista
+    documentsListEl.innerHTML = ''; // Clear list
     let hasDocuments = false;
 
     const uniqueBaseNames = new Set();
@@ -180,7 +211,7 @@ async function checkExistingDocuments() {
     });
 
     uniqueBaseNames.forEach((baseName) => {
-      updateDocumentsList(baseName + '.md', new Date(), false); // false para no mostrar notificación
+      updateDocumentsList(baseName + '.md', new Date(), false); // false to not show notification
       hasDocuments = true;
     });
 
@@ -192,13 +223,13 @@ async function checkExistingDocuments() {
       noDocumentsEl.classList.remove('d-none');
     }
   } catch (error) {
-    console.error('Error al cargar documentos existentes:', error);
+    console.error('Error loading existing documents:', error);
     documentsListEl.classList.add('d-none');
     noDocumentsEl.classList.remove('d-none');
   }
 }
 
-// Manejar la subida del archivo Markdown
+// Handle Markdown file upload
 document.getElementById('upload-form').addEventListener('submit', async function (e) {
   e.preventDefault();
 
@@ -207,7 +238,7 @@ document.getElementById('upload-form').addEventListener('submit', async function
 
   if (!file) {
     showNotification(
-      '<i class="fas fa-exclamation-circle me-1"></i> Por favor, selecciona un archivo Markdown (.md).',
+      '<i class="fas fa-exclamation-circle me-1"></i> Please select a Markdown file (.md).',
       'error'
     );
     return;
@@ -232,7 +263,7 @@ document.getElementById('upload-form').addEventListener('submit', async function
   const formData = new FormData();
   formData.append('markdown-file', file);
   formData.append('pageSize', pageSize);
-  formData.append('codeTheme', codeThemeValue); // Enviar el valor del tema, no el nombre del archivo CSS
+  formData.append('codeTheme', codeThemeValue); // Send theme value, not CSS filename
   formData.append('orientation', pageOrientation);
   if (marginTop) formData.append('marginTop', marginTop + 'mm');
   if (marginBottom) formData.append('marginBottom', marginBottom + 'mm');
@@ -248,12 +279,12 @@ document.getElementById('upload-form').addEventListener('submit', async function
   };
 
   try {
-    updateStatus('Enviando archivo...');
-    // Simulación de progreso
-    setTimeout(() => updateStatus('Convirtiendo a HTML...'), 300);
-    setTimeout(() => updateStatus('Generando PDF...'), 1000);
+    updateStatus('Sending file...');
+    // Progress simulation
+    setTimeout(() => updateStatus('Converting to HTML...'), 300);
+    setTimeout(() => updateStatus('Generating PDF...'), 1000);
 
-    const response = await fetch('/convert', {
+    const response = await fetch('/api/convert', {
       method: 'POST',
       body: formData,
     });
@@ -261,28 +292,28 @@ document.getElementById('upload-form').addEventListener('submit', async function
     if (!response.ok) {
       const errorData = await response
         .json()
-        .catch(() => ({ error: `Error del servidor: ${response.status}` }));
-      throw new Error(errorData.error || `Error HTTP: ${response.status}`);
+        .catch(() => ({ error: `Server error: ${response.status}` }));
+      throw new Error(errorData.error || `HTTP Error: ${response.status}`);
     }
 
-    updateStatus('Procesando resultado...');
+    updateStatus('Processing result...');
     const result = await response.json();
 
     if (result.success) {
       showNotification(
-        '<i class="fas fa-check-circle me-1"></i> ¡Archivo convertido con éxito!',
+        '<i class="fas fa-check-circle me-1"></i> File converted successfully!',
         'success'
       );
-      updateDocumentsList(result.filename, new Date(), true); // true para mostrar notificación
-      fileInput.value = ''; // Limpiar input
-      // Disparar evento change para resetear el display del nombre del archivo y estilo del área de carga
+      updateDocumentsList(result.filename, new Date(), true); // true to show notification
+      fileInput.value = ''; // Clear input
+      // Trigger change event to reset filename display and upload area style
       fileInput.dispatchEvent(new Event('change'));
-      document.getElementById('markdown-preview').classList.add('d-none'); // Ocultar preview
+      document.getElementById('markdown-preview').classList.add('d-none'); // Hide preview
     } else {
-      throw new Error(result.error || 'Error desconocido al convertir el archivo.');
+      throw new Error(result.error || 'Unknown error converting file.');
     }
   } catch (error) {
-    console.error('Error en la conversión:', error);
+    console.error('Conversion error:', error);
     showNotification(
       `<i class="fas fa-exclamation-triangle me-1"></i> Error: ${error.message}`,
       'error'
@@ -290,24 +321,11 @@ document.getElementById('upload-form').addEventListener('submit', async function
   } finally {
     loadingEl.classList.add('d-none');
     loadingEl.classList.remove('d-flex');
-    updateStatus('Procesando...'); // Reset status
+    updateStatus('Processing...'); // Reset status
   }
 });
 
-// Guardar y cargar preferencias de opciones
-const optionsToSave = [
-  { id: 'page-size', type: 'value' },
-  { id: 'theme-select', type: 'value' },
-  { id: 'page-orientation', type: 'value' },
-  { id: 'margin-top', type: 'value' },
-  { id: 'margin-bottom', type: 'value' },
-  { id: 'margin-left', type: 'value' },
-  { id: 'margin-right', type: 'value' },
-  { id: 'custom-css', type: 'value' },
-  { id: 'header-template', type: 'value' },
-  { id: 'footer-template', type: 'value' },
-];
-
+// Save and load option preferences
 function saveOptions() {
   optionsToSave.forEach(opt => {
     const element = document.getElementById(opt.id);
@@ -315,7 +333,7 @@ function saveOptions() {
       localStorage.setItem(`option_${opt.id}`, element[opt.type]);
     }
   });
-  showNotification('<i class="fas fa-save me-1"></i> Preferencias guardadas.', 'success');
+  showNotification('<i class="fas fa-save me-1"></i> Preferences saved.', 'success');
 }
 
 function loadOptions() {
@@ -325,7 +343,7 @@ function loadOptions() {
       const element = document.getElementById(opt.id);
       if (element) {
         element[opt.type] = savedValue;
-        // Disparar evento change para selectores para que se actualice la UI si es necesario (ej. highlight theme)
+        // Trigger change event for selectors to update UI if needed (e.g. highlight theme)
         if (element.tagName === 'SELECT') {
           element.dispatchEvent(new Event('change'));
         }
@@ -344,8 +362,8 @@ function resetOptions() {
     'margin-left': '',
     'margin-right': '',
     'custom-css': '',
-    'header-template': "<div style='font-size: 8px; width: 100%; text-align: center;'><span class='date'></span> - <span class='title'></span></div>",
-    'footer-template': "<div style='font-size: 8px; width: 100%; text-align: center;'><span class='pageNumber'></span> / <span class='totalPages'></span></div>",
+    'header-template': '', // Modified to be empty by default
+    'footer-template': '', // Modified to be empty by default
   };
 
   optionsToSave.forEach(opt => {
@@ -357,7 +375,7 @@ function resetOptions() {
       }
     }
   });
-  showNotification('<i class="fas fa-undo me-1"></i> Opciones restablecidas a los valores por defecto.', 'info');
+  showNotification('<i class="fas fa-undo me-1"></i> Options reset to default values.', 'info');
   optionsToSave.forEach(opt => localStorage.removeItem(`option_${opt.id}`));
 }
 
@@ -374,14 +392,14 @@ function showNotification(message, type = 'info', duration = 5000) {
 
   const notification = document.createElement('div');
   notification.className = `alert ${alertClass} alert-dismissible fade show shadow-sm notification-toast position-fixed top-0 end-0 m-3`;
-  notification.style.zIndex = '1100'; // Asegurar que esté por encima de otros elementos
+  notification.style.zIndex = '1100'; // Ensure it's above other elements
   notification.setAttribute('role', 'alert');
   notification.innerHTML = `
     ${message}
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
   `;
 
-  document.body.appendChild(notification); // Añadir al body para posicionamiento fixed
+  document.body.appendChild(notification); // Add to body for fixed positioning
 
   setTimeout(() => {
     const bsAlert = bootstrap.Alert.getInstance(notification);
@@ -398,53 +416,53 @@ function updateDocumentsList(filename, creationDate, showNotif = true) {
   noDocumentsEl.classList.add('d-none');
 
   const baseName = filename.replace(/\.md$/, '');
-  const dateToDisplay = creationDate || new Date(); // Usar fecha provista o actual
+  const dateToDisplay = creationDate || new Date(); // Use provided date or current date
 
-  // Evitar duplicados basados en baseName
+  // Avoid duplicates based on baseName
   const existingItem = documentsListEl.querySelector(`[data-basename="${baseName}"]`);
   if (existingItem) {
-    // Opcional: actualizar timestamp si es necesario, o simplemente no hacer nada.
-    // Por ahora, si ya existe, no lo re-añadimos.
-    // Podrías querer actualizar el timestamp si el archivo se convierte de nuevo.
+    // Optional: update timestamp if needed, or just do nothing.
+    // For now, if it already exists, we don't re-add it.
+    // You might want to update the timestamp if the file is converted again.
     const timestampEl = existingItem.querySelector('.document-timestamp');
     if (timestampEl) {
-      timestampEl.textContent = `Reconvertido: ${dateToDisplay.toLocaleString()}`;
+      timestampEl.textContent = `Reconverted: ${dateToDisplay.toLocaleString()}`;
     }
     if (showNotif && filename.endsWith('.md')) {
-      // Solo notificar si es una nueva conversión de MD
+      // Only notify if it's a new MD conversion
       showNotification(
-        `<i class="fas fa-sync-alt me-1"></i> "${baseName}.md" actualizado.`,
+        `<i class="fas fa-sync-alt me-1"></i> "${baseName}.md" updated.`,
         'info'
       );
     }
-    return; // No añadir duplicado
+    return; // Don't add duplicate
   }
 
   const newItem = document.createElement('div');
   newItem.className =
     'list-group-item list-group-item-action d-flex justify-content-between align-items-center flex-wrap gap-2';
   newItem.setAttribute('data-basename', baseName);
-  newItem.setAttribute('data-date', dateToDisplay.getTime().toString()); // Guardar timestamp para ordenar
+  newItem.setAttribute('data-date', dateToDisplay.getTime().toString()); // Save timestamp for sorting
 
   newItem.innerHTML = `
     <div class="flex-grow-1">
       <h5 class="mb-1 text-primary">${baseName}.md</h5>
-      <small class="text-muted">Convertido: ${dateToDisplay.toLocaleString()}</small>
+      <small class="text-muted">Converted: ${dateToDisplay.toLocaleString()}</small>
     </div>
-    <div class="btn-group" role="group" aria-label="Acciones del documento">
-      <a href="public/${baseName}.html" target="_blank" class="btn btn-sm btn-outline-secondary" title="Ver HTML de ${baseName}.md">
+    <div class="btn-group" role="group" aria-label="Document actions">
+      <a href="public/${baseName}.html" target="_blank" class="btn btn-sm btn-outline-secondary" title="View HTML of ${baseName}.md">
         <i class="fas fa-file-alt me-1"></i> HTML
       </a>
-      <a href="public/${baseName}.pdf" class="btn btn-sm btn-danger" target="_blank" title="Ver PDF de ${baseName}.md">
+      <a href="public/${baseName}.pdf" class="btn btn-sm btn-danger" target="_blank" title="View PDF of ${baseName}.md">
         <i class="fas fa-file-pdf me-1"></i> PDF
       </a>
-      <button class="btn btn-sm btn-outline-danger delete-btn" title="Eliminar ${baseName}">
-        <i class="fas fa-trash-alt me-1"></i> Eliminar
+      <button class="btn btn-sm btn-outline-danger delete-btn" title="Delete ${baseName}">
+        <i class="fas fa-trash-alt me-1"></i> Delete
       </button>
     </div>
   `;
 
-  // Insertar ordenado por fecha (más reciente primero)
+  // Insert sorted by date (most recent first)
   const existingItems = Array.from(documentsListEl.children);
   let inserted = false;
   for (const item of existingItems) {
@@ -458,36 +476,36 @@ function updateDocumentsList(filename, creationDate, showNotif = true) {
     documentsListEl.appendChild(newItem);
   }
 
-  // Agregar event listener para el botón de eliminar
+  // Add event listener for delete button
   const deleteButton = newItem.querySelector('.delete-btn');
   deleteButton.addEventListener('click', async () => {
     const confirmDelete = confirm(
-      `¿Estás seguro de que quieres eliminar los archivos asociados con "${baseName}.md"?`
+      `Are you sure you want to delete the files associated with "${baseName}.md"?`
     );
     if (confirmDelete) {
       try {
-        const response = await fetch(`/delete-files/${baseName}`, { method: 'DELETE' });
+        const response = await fetch(`/api/convert/delete/${baseName}`, { method: 'DELETE' });
         const result = await response.json();
         if (result.success) {
           newItem.remove();
           showNotification(
-            `<i class="fas fa-check-circle me-1"></i> Archivos de "${baseName}.md" eliminados.`,
+            `<i class="fas fa-check-circle me-1"></i> "${baseName}.md" files deleted.`,
             'success'
           );
-          // Verificar si la lista está vacía después de eliminar
+          // Check if list is empty after deletion
           if (documentsListEl.children.length === 0) {
             noDocumentsEl.classList.remove('d-none');
             documentsListEl.classList.add('d-none');
           }
         } else {
           showNotification(
-            `<i class="fas fa-exclamation-triangle me-1"></i> Error al eliminar: ${result.error}`,
+            `<i class="fas fa-exclamation-triangle me-1"></i> Error deleting: ${result.error}`,
             'error'
           );
         }
       } catch (error) {
         showNotification(
-          `<i class="fas fa-exclamation-triangle me-1"></i> Error de red al eliminar: ${error.message}`,
+          `<i class="fas fa-exclamation-triangle me-1"></i> Network error while deleting: ${error.message}`,
           'error'
         );
       }
@@ -495,15 +513,15 @@ function updateDocumentsList(filename, creationDate, showNotif = true) {
   });
 
   if (showNotif && filename.endsWith('.md')) {
-    // Solo notificar si es una nueva conversión de MD
+    // Only notify if it's a new MD conversion
     showNotification(
-      `<i class="fas fa-check-circle me-1"></i> "${baseName}.md" añadido a la lista.`,
+      `<i class="fas fa-check-circle me-1"></i> "${baseName}.md" added to the list.`,
       'success'
     );
   }
 }
 
-// Funcionalidad de arrastrar y soltar
+// Drag and drop functionality
 const dropArea = document.querySelector('.file-upload');
 
 ['dragenter', 'dragover', 'dragleave', 'drop'].forEach((eventName) => {
@@ -520,7 +538,7 @@ function preventDefaults(e) {
     eventName,
     () => {
       if (!dropArea.classList.contains('border-success')) {
-        // No cambiar si ya hay un archivo válido
+        // Don't change if there's already a valid file
         dropArea.classList.add('border-info', 'bg-info-subtle');
         dropArea.classList.remove('border-primary', 'bg-light');
       }
@@ -552,7 +570,7 @@ dropArea.addEventListener(
       const fileInput = document.getElementById('markdown-file');
       fileInput.files = files;
       const event = new Event('change', { bubbles: true });
-      fileInput.dispatchEvent(event); // Para actualizar UI y preview
+      fileInput.dispatchEvent(event); // To update UI and preview
     }
   },
   false

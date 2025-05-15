@@ -1,12 +1,13 @@
-// Cargar el highlight.js para resaltado de código
+// filepath: /home/markdown-to-pdf/js/main.js
+// Load highlight.js for code highlighting
 document.addEventListener('DOMContentLoaded', () => {
   if (typeof hljs !== 'undefined') {
   } else {
-    console.warn('Highlight.js no está definido. El resaltado de código no funcionará.');
+    console.warn('Highlight.js is not defined. Code highlighting will not work.');
   }
 });
 
-// Mostrar archivo de ejemplo
+// Show example file
 document.getElementById('show-example')?.addEventListener('click', async function() {
   const loadingEl = document.getElementById('loading');
   if (loadingEl) {
@@ -19,22 +20,22 @@ document.getElementById('show-example')?.addEventListener('click', async functio
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => null);
-      throw new Error(errorData?.error || `No se pudo cargar el ejemplo (Estado: ${response.status})`);
+      throw new Error(errorData?.error || `Could not load example (Status: ${response.status})`);
     }
-    // El servidor ahora debería devolver el nombre del archivo en la respuesta JSON
+    // The server should now return the filename in the JSON response
     const result = await response.json();
 
-    if (result.success && result.filename) {
-        updateDocumentsList(result.filename, new Date(), true);
-        const modoMsg = colorBlindMode ? ' (modo daltónico optimizado)' : '';
-        showNotification(`<i class="fas fa-check-circle me-1"></i> Ejemplo "${result.filename}" cargado correctamente${modoMsg}.`, 'success');
+    if (result.success && result.markdownFile) { // Changed result.filename to result.markdownFile
+        updateDocumentsList(result.markdownFile, new Date(), true); // Changed result.filename to result.markdownFile
+        const modeMsg = colorBlindMode ? ' (color blind optimized mode)' : '';
+        showNotification(`<i class="fas fa-check-circle me-1"></i> Example "${result.markdownFile}" successfully loaded${modeMsg}.`, 'success'); // Changed result.filename to result.markdownFile
     } else {
-        throw new Error(result.error || 'Respuesta inesperada del servidor al cargar ejemplo.');
+        throw new Error(result.error || 'Unexpected server response when loading example.');
     }
 
   } catch (error) {
-    console.error('Error al cargar el ejemplo:', error);
-    showNotification(`<i class="fas fa-exclamation-triangle me-1"></i> Error al cargar el ejemplo: ${error.message}`, 'error');
+    console.error('Error loading example:', error);
+    showNotification(`<i class="fas fa-exclamation-triangle me-1"></i> Error loading example: ${error.message}`, 'error');
   } finally {
     if (loadingEl) {
       loadingEl.classList.add('d-none');
@@ -43,7 +44,7 @@ document.getElementById('show-example')?.addEventListener('click', async functio
   }
 });
 
-// Vista previa de Markdown
+// Markdown preview
 document.getElementById('markdown-file')?.addEventListener('change', function(e) {
   const file = e.target.files[0];
   const previewContainer = document.getElementById('markdown-preview');
@@ -60,48 +61,48 @@ document.getElementById('markdown-file')?.addEventListener('change', function(e)
   reader.onload = function(event) {
     const content = event.target.result;
     try {
-      // Usar markdown-it para una vista previa más fiel si está disponible
-      // Esta es una mejora opcional, si markdown-it no está disponible globalmente, usar pre simple.
+      // Use markdown-it for a more accurate preview if available
+      // This is an optional enhancement, if markdown-it is not available globally, use simple pre.
       let htmlContent;
       if (typeof MarkdownIt !== 'undefined') {
         const md = new MarkdownIt();
         htmlContent = md.render(content.substring(0, 500) + (content.length > 500 ? '...' : ''));
       } else {
         let previewText = content.substring(0, 500);
-        if (content.length > 500) previewText += '... (vista previa truncada)';
+        if (content.length > 500) previewText += '... (preview truncated)';
         htmlContent = `<pre class="bg-light p-3 rounded">${previewText.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</pre>`;
       }
 
       const fileSize = (file.size / 1024).toFixed(2) + ' KB';
       const fileInfo = `<div class="mt-2 text-muted small">
                           <span class="badge bg-secondary me-2">${file.name}</span>
-                          <span class="badge bg-light text-dark border">Tamaño: ${fileSize}</span>
+                          <span class="badge bg-light text-dark border">Size: ${fileSize}</span>
                         </div>`;
 
       previewContent.innerHTML = htmlContent + fileInfo;
       previewContainer.classList.remove('d-none');
     } catch (error) {
-      console.error("Error al generar vista previa:", error);
-      previewContent.innerHTML = `<p class="text-danger">Error al generar la vista previa.</p>`;
+      console.error("Error generating preview:", error);
+      previewContent.innerHTML = `<p class="text-danger">Error generating preview.</p>`;
       previewContainer.classList.remove('d-none');
     }
   };
 
   reader.onerror = function() {
-    console.error("Error al leer el archivo para vista previa.");
-    previewContent.innerHTML = `<p class="text-danger">No se pudo leer el archivo para la vista previa.</p>`;
+    console.error("Error reading file for preview.");
+    previewContent.innerHTML = `<p class="text-danger">Could not read file for preview.</p>`;
     previewContainer.classList.remove('d-none');
   };
 
   reader.readAsText(file);
 });
 
-// Inicializar highlight.js después de que el DOM esté completamente cargado
-// y aplicar el tema inicial.
-// La función applyThemeSetting (en index.html) se encarga de llamar a hljs.highlightAll()
-// o configurar el lenguaje correcto después de cambiar el tema de highlight.js.
-// Asegurarse que hljs.highlightAll() se llame cuando sea necesario, por ejemplo,
-// después de cargar contenido dinámicamente que necesite resaltado.
+// Initialize highlight.js after the DOM is fully loaded
+// and apply the initial theme.
+// The applyThemeSetting function (in index.html) is responsible for calling hljs.highlightAll()
+// or configuring the correct language after changing the highlight.js theme.
+// Make sure that hljs.highlightAll() is called when necessary, for example,
+// after loading dynamic content that needs highlighting.
 
-// Si se usa AJAX para cargar contenido que contiene bloques de código,
-// llamar a hljs.highlightAll() o hljs.highlightElement() después de insertar el contenido.
+// If using AJAX to load content containing code blocks,
+// call hljs.highlightAll() or hljs.highlightElement() after inserting the content.
