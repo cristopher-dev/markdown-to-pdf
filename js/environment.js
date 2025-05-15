@@ -19,6 +19,14 @@
     
     // Ruta base para cargar archivos estáticos
     getBasePath: function() {
+      // Detectar el repositorio base para URLs correctas en GitHub Pages
+      if (this.isStaticHosting() && window.location.hostname.includes('github.io')) {
+        const pathParts = window.location.pathname.split('/');
+        // Si el primer elemento después del dominio es el nombre del repositorio
+        if (pathParts.length > 1) {
+          return '/' + pathParts[1];
+        }
+      }
       return this.isStaticHosting() ? '' : '';
     },
     
