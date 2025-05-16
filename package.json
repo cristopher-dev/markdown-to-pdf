@@ -1,7 +1,7 @@
 {
   "name": "markdown-to-pdf",
   "version": "1.0.0",
-  "description": "Convertir Markdown a PDF utilizando Puppeteer",
+  "description": "Convert Markdown to PDF",
   "main": "src/server.js",
   "author": {
     "name": "Cristopher Martinez",

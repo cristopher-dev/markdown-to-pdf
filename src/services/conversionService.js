@@ -7,16 +7,19 @@ const markdownIt = require('markdown-it')({
   html: true, // Habilitar HTML tags en source
   linkify: true, // Autoconvertir URLs tipo texto en links
   typographer: true, // Habilitar algunas sustituciones de comillas inteligentes, etc.
-  highlight: function (str, lang) { // Añadir resaltado de sintaxis
+  highlight: function (str, lang) {
+    // Añadir resaltado de sintaxis
     if (lang && hljs.getLanguage(lang)) {
       try {
-        return '<pre class="hljs"><code>' +
-               hljs.highlight(str, { language: lang, ignoreIllegals: true }).value +
-               '</code></pre>';
+        return (
+          '<pre class="hljs"><code>' +
+          hljs.highlight(str, { language: lang, ignoreIllegals: true }).value +
+          '</code></pre>'
+        );
       } catch (__) {}
     }
     return '<pre class="hljs"><code>' + markdownIt.utils.escapeHtml(str) + '</code></pre>';
-  }
+  },
 }).use(require('markdown-it-footnote')); // Añadir soporte para notas al pie
 const hljs = require('highlight.js');
 
@@ -48,7 +51,7 @@ const ensurePublicDirectoryExists = (outputBaseName) => {
 async function convertMarkdownToPDF(
   markdownContent,
   outputBaseName, // ej: /home/markdown-to-pdf/public/nombreArchivo
-  customCSSPath,  // ej: /home/markdown-to-pdf/src/public/css/custom-styles.css
+  customCSSPath, // ej: /home/markdown-to-pdf/src/public/css/custom-styles.css
   options = {}
 ) {
   ensurePublicDirectoryExists(outputBaseName);
@@ -60,13 +63,13 @@ async function convertMarkdownToPDF(
     marginBottom = process.env.DEFAULT_MARGIN_BOTTOM || '20mm',
     marginLeft = process.env.DEFAULT_MARGIN_LEFT || '20mm',
     marginRight = process.env.DEFAULT_MARGIN_RIGHT || '20mm',
-    customCSS = '', // CSS personalizado como string
-    headerTemplate = '<div style="font-size:10px; width:100%; text-align:center;">Page <span class="pageNumber"></span> of <span class="totalPages"></span></div>',
+    customCSS = '',
+    headerTemplate = '',
     footerTemplate = '',
   } = options;
 
   const htmlContent = markdownIt.render(markdownContent);
-  
+
   let customCSSText = '';
   if (customCSSPath && fs.existsSync(customCSSPath)) {
     customCSSText = fs.readFileSync(customCSSPath, 'utf8');
@@ -113,7 +116,7 @@ async function convertMarkdownToPDF(
       '--disable-dev-shm-usage',
       '--disable-gpu',
       '--single-process',
-      '--font-render-hinting=none'
+      '--font-render-hinting=none',
     ],
     ignoreDefaultArgs: ['--enable-automation'],
     executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
@@ -145,7 +148,6 @@ async function convertMarkdownToPDF(
   // Guardar el HTML completo que se usó para generar el PDF (para vista previa o depuración)
   fs.writeFileSync(htmlPath, fullHtml);
 
-
   return { pdf: pdfPath, html: htmlPath };
 }
 
@@ -156,12 +158,12 @@ if (require.main === module) {
       // Read the specified file or default to README.md
       const inputFile = process.argv[2] || 'README.md';
       console.log(`🔍 Leyendo archivo Markdown: ${inputFile}`);
-      
+
       const markdownContent = fs.readFileSync(inputFile, 'utf8');
-      
+
       // Get output base name from input filename (without extension)
       const outputBaseName = process.argv[3] || 'output';
-      
+
       await convertMarkdownToPDF(markdownContent, outputBaseName);
     } catch (error) {
       console.error('❌ Error running conversion:', error);
