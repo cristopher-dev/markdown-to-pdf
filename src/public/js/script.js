@@ -1,5 +1,3 @@
-// filepath: /home/markdown-to-pdf/js/script.js
-// Bootstrap tooltips initialization
 document.addEventListener('DOMContentLoaded', function () {
   // Initialize tooltips
   var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
