@@ -1,13 +1,13 @@
 // filepath: /home/markdown-to-pdf/js/script.js
 // Bootstrap tooltips initialization
-document.addEventListener('DOMContentLoaded', () => {
-  // Initialize Bootstrap tooltips
-  const tooltipTriggerList = [
-    ...document.querySelectorAll('[data-bs-toggle="tooltip"]'),
-  ];
-  tooltipTriggerList.map(
-    (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl)
+document.addEventListener('DOMContentLoaded', function () {
+  // Initialize tooltips
+  var tooltipTriggerList = [].slice.call(
+    document.querySelectorAll('[data-bs-toggle="tooltip"]')
   );
+  var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+    return new bootstrap.Tooltip(tooltipTriggerEl);
+  });
 
   // Show current date and time as last update
   const now = new Date();
@@ -28,41 +28,34 @@ document.addEventListener('DOMContentLoaded', () => {
   checkExistingDocuments();
 
   // Toggle for advanced configuration panel (inside options panel)
-  const toggleSettingsButton = document.getElementById('toggleSettings');
-  const settingsPanel = document.getElementById('settingsPanel');
-  const mainContent = document.getElementById('mainContent'); // Assuming your main content area has this ID
+  const toggleSettingsButton = document.getElementById('toggle-settings');
+  const settingsContent = document.getElementById('settings-content');
 
-  if (toggleSettingsButton && settingsPanel && mainContent) {
+  if (toggleSettingsButton && settingsContent) {
+    const settingsChevron = toggleSettingsButton.querySelector(
+      '.fas.fa-chevron-down, .fas.fa-chevron-up'
+    );
     toggleSettingsButton.addEventListener('click', () => {
-      settingsPanel.classList.toggle('show');
-      mainContent.classList.toggle('settings-panel-open');
-
-      // Update chevron icon
-      const settingsChevron = toggleSettingsButton.querySelector(
-        '.fas.fa-chevron-right, .fas.fa-chevron-left'
-      );
-      if (settingsPanel.classList.contains('show')) {
-        settingsChevron.classList.remove('fa-chevron-left');
-        settingsChevron.classList.add('fa-chevron-right');
-        toggleSettingsButton.setAttribute('aria-expanded', 'true');
-      } else {
-        settingsChevron.classList.remove('fa-chevron-right');
-        settingsChevron.classList.add('fa-chevron-left');
-        toggleSettingsButton.setAttribute('aria-expanded', 'false');
+      settingsContent.classList.toggle('d-none');
+      const isHidden = settingsContent.classList.contains('d-none');
+      if (settingsChevron) {
+        settingsChevron.classList.toggle('fa-chevron-down', isHidden);
+        settingsChevron.classList.toggle('fa-chevron-up', !isHidden);
       }
+      toggleSettingsButton.setAttribute('aria-expanded', !isHidden);
     });
   }
 
   // Toggle for the main "Options" button that shows/hides the settings panel
   const settingsBtn = document.getElementById('settings-btn');
-  const settingsPanelEl = document.getElementById('settings-panel');
+  const settingsPanel = document.getElementById('settings-panel');
 
-  if (settingsBtn && settingsPanelEl) {
+  if (settingsBtn && settingsPanel) {
     settingsBtn.addEventListener('click', () => {
-      settingsPanelEl.classList.toggle('d-none');
-      settingsBtn.setAttribute('aria-expanded', !settingsPanelEl.classList.contains('d-none'));
+      settingsPanel.classList.toggle('d-none');
+      settingsBtn.setAttribute('aria-expanded', !settingsPanel.classList.contains('d-none'));
     });
-    settingsBtn.setAttribute('aria-expanded', !settingsPanelEl.classList.contains('d-none'));
+    settingsBtn.setAttribute('aria-expanded', !settingsPanel.classList.contains('d-none'));
     settingsBtn.setAttribute('aria-controls', 'settings-panel');
   }
 
@@ -79,436 +72,506 @@ document.addEventListener('DOMContentLoaded', () => {
   if (resetBtn) {
     resetBtn.addEventListener('click', resetOptions);
   }
-
-  // Theme toggle functionality
-  const themeToggle = document.getElementById('themeToggle');
-  const themeOptions = document.querySelectorAll('.theme-option');
-  const themeIcon = themeToggle.querySelector('i');
-  const currentHtmlTheme = document.documentElement.getAttribute('data-bs-theme');
-
-  // Function to set the theme
-  function setTheme(theme) {
-    document.documentElement.setAttribute('data-bs-theme', theme);
-    localStorage.setItem('theme', theme);
-    updateThemeIcon(theme);
-    updateActiveThemeOption(theme);
-  }
-
-  // Function to update the theme icon
-  function updateThemeIcon(theme) {
-    if (theme === 'auto') {
-      themeIcon.className = 'fas fa-circle-half-stroke'; // Icon for auto/system
-    } else if (theme === 'dark') {
-      themeIcon.className = 'fas fa-moon'; // Icon for dark
-    } else {
-      themeIcon.className = 'fas fa-sun'; // Icon for light
-    }
-  }
-
-  // Function to update the active theme option in the dropdown
-  function updateActiveThemeOption(theme) {
-    themeOptions.forEach(option => {
-      option.classList.remove('active');
-      if (option.getAttribute('data-theme-value') === theme) {
-        option.classList.add('active');
-      }
-    });
-  }
-
-  // Event listener for theme options in the dropdown
-  themeOptions.forEach(option => {
-    option.addEventListener('click', (e) => {
-      e.preventDefault();
-      const selectedTheme = option.getAttribute('data-theme-value');
-      setTheme(selectedTheme);
-    });
-  });
-
-  // Apply stored theme or system preference on load
-  const storedTheme = localStorage.getItem('theme');
-  const systemDarkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-  systemDarkModeMediaQuery.addEventListener('change', (e) => {
-    if (localStorage.getItem('theme') === 'auto') {
-      setTheme(e.matches ? 'dark' : 'light');
-    }
-  });
-
-  if (storedTheme) {
-    setTheme(storedTheme);
-  } else if (currentHtmlTheme && currentHtmlTheme !== 'auto') {
-    setTheme(currentHtmlTheme); // Use theme from HTML if set and not 'auto'
-  } else {
-    // Default to 'auto' if nothing is set
-    setTheme('auto');
-    // If auto, immediately apply system preference
-    if (systemDarkModeMediaQuery.matches) {
-      document.documentElement.setAttribute('data-bs-theme', 'dark');
-      updateThemeIcon('dark'); // Update icon based on actual applied theme
-    } else {
-      document.documentElement.setAttribute('data-bs-theme', 'light');
-      updateThemeIcon('light'); // Update icon based on actual applied theme
-    }
-  }
-  // Ensure the active option is correctly set on load
-  updateActiveThemeOption(localStorage.getItem('theme') || (systemDarkModeMediaQuery.matches ? 'dark' : 'light'));
-
-  // File upload area drag and drop functionality
-  const fileUploadArea = document.querySelector('.file-upload');
-  const fileInput = document.getElementById('markdownFile');
-  const fileUploadLabel = document.querySelector('.file-upload-label');
-  const fileChosenSpan = document.getElementById('file-chosen');
-
-  if (fileUploadArea && fileInput && fileUploadLabel && fileChosenSpan) {
-    fileUploadArea.addEventListener('dragover', (event) => {
-      event.preventDefault();
-      fileUploadArea.classList.add('dragging');
-    });
-
-    fileUploadArea.addEventListener('dragleave', () => {
-      fileUploadArea.classList.remove('dragging');
-    });
-
-    fileUploadArea.addEventListener('drop', (event) => {
-      event.preventDefault();
-      fileUploadArea.classList.remove('dragging');
-      const files = event.dataTransfer.files;
-      if (files.length > 0) {
-        fileInput.files = files; // Assign dropped files to the input
-        fileChosenSpan.textContent = files[0].name;
-        fileChosenSpan.classList.remove('text-muted');
-        // Optionally, trigger form submission or other actions here
-      }
-    });
-
-    // Update file chosen text on manual file selection
-    fileInput.addEventListener('change', () => {
-      if (fileInput.files.length > 0) {
-        fileChosenSpan.textContent = fileInput.files[0].name;
-        fileChosenSpan.classList.remove('text-muted'); // Make it normal text color
-      } else {
-        fileChosenSpan.textContent = 'No file chosen';
-        fileChosenSpan.classList.add('text-muted'); // Make it muted text color
-      }
-    });
-
-    // Allow label click to trigger file input
-    fileUploadLabel.addEventListener('click', (event) => {
-      // Prevent default if the click is on the label itself and not the input
-      if (event.target.tagName.toLowerCase() === 'label' || event.target.classList.contains('file-upload-label')) {
-         fileInput.click();
-      }
-    });
-  }
-
-  // Handle form submission for text input
-  const textForm = document.getElementById('convertTextForm');
-  if (textForm) {
-    textForm.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const formData = new FormData(textForm);
-      const responseDisplay = document.getElementById('textConversionResponse');
-      const submitButton = textForm.querySelector('button[type="submit"]');
-      const originalButtonText = submitButton.innerHTML;
-      submitButton.disabled = true;
-      submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Converting...';
-
-      try {
-        const response = await fetch('/api/convert-text', {
-          method: 'POST',
-          body: new URLSearchParams(formData) // Send as x-www-form-urlencoded
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
-          responseDisplay.innerHTML = 
-            `<div class="alert alert-success alert-dismissible fade show" role="alert">
-              Conversion successful! 
-              <a href="${result.pdfPath}" target="_blank" class="alert-link">View PDF</a>
-              ${result.htmlPath ? `| <a href="${result.htmlPath}" target="_blank" class="alert-link">View HTML</a>` : ''}
-              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>`;
-          fetchConvertedFiles(); // Refresh file list
-        } else {
-          responseDisplay.innerHTML = 
-            `<div class="alert alert-danger alert-dismissible fade show" role="alert">
-              <strong>Error:</strong> ${result.message || 'Conversion failed'}
-              ${result.error ? `<br><small>${result.error}</small>` : ''}
-              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>`;
-        }
-      } catch (error) {
-        responseDisplay.innerHTML = 
-          `<div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <strong>Network Error:</strong> ${error.message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>`;
-      }
-      finally {
-        submitButton.disabled = false;
-        submitButton.innerHTML = originalButtonText;
-      }
-    });
-  }
-
-  // Handle form submission for file upload
-  const fileForm = document.getElementById('convertFileForm');
-  if (fileForm) {
-    fileForm.addEventListener('submit', async (event) => {
-      event.preventDefault();
-      const formData = new FormData(fileForm);
-      const responseDisplay = document.getElementById('fileConversionResponse');
-      const submitButton = fileForm.querySelector('button[type="submit"]');
-      const originalButtonText = submitButton.innerHTML;
-      submitButton.disabled = true;
-      submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Converting...';
-
-      try {
-        const response = await fetch('/api/convert', {
-          method: 'POST',
-          body: formData, // FormData handles multipart/form-data
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
-          responseDisplay.innerHTML = 
-            `<div class="alert alert-success alert-dismissible fade show" role="alert">
-              Conversion successful! 
-              <a href="${result.pdfPath}" target="_blank" class="alert-link">View PDF</a>
-              ${result.htmlPath ? `| <a href="${result.htmlPath}" target="_blank" class="alert-link">View HTML</a>` : ''}
-              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>`;
-          fetchConvertedFiles(); // Refresh file list
-          fileInput.value = ''; // Clear the file input
-          fileChosenSpan.textContent = 'No file chosen';
-          fileChosenSpan.classList.add('text-muted');
-        } else {
-          responseDisplay.innerHTML = 
-            `<div class="alert alert-danger alert-dismissible fade show" role="alert">
-              <strong>Error:</strong> ${result.message || 'Conversion failed'}
-              ${result.error ? `<br><small>${result.error}</small>` : ''}
-              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>`;
-        }
-      } catch (error) {
-        responseDisplay.innerHTML = 
-          `<div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <strong>Network Error:</strong> ${error.message}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>`;
-      }
-      finally {
-        submitButton.disabled = false;
-        submitButton.innerHTML = originalButtonText;
-      }
-    });
-  }
-
-  // Fetch and display converted files
-  const convertedFilesList = document.getElementById('convertedFilesList');
-  async function fetchConvertedFiles() {
-    if (!convertedFilesList) return;
-    try {
-      const response = await fetch('/list-files');
-      const files = await response.json();
-      convertedFilesList.innerHTML = ''; // Clear existing list
-
-      if (files.length === 0) {
-        convertedFilesList.innerHTML = '<li class="list-group-item text-muted">No files converted yet.</li>';
-        return;
-      }
-
-      files.forEach((file) => {
-        const listItem = document.createElement('li');
-        listItem.className =
-          'list-group-item d-flex justify-content-between align-items-center';
-        
-        let fileTypeIcon = '<i class="fas fa-file-alt me-2"></i>'; // Default icon
-        if (file.type === 'PDF') {
-          fileTypeIcon = '<i class="fas fa-file-pdf text-danger me-2"></i>';
-        } else if (file.type === 'HTML') {
-          fileTypeIcon = '<i class="fas fa-file-code text-primary me-2"></i>';
-        }
-
-        listItem.innerHTML = `
-          <div>
-            ${fileTypeIcon}
-            <a href="/public/${file.name}" target="_blank" title="View ${file.name}">${file.name}</a>
-            <small class="text-muted ms-2">(${file.size})</small>
-          </div>
-          <div>
-            ${file.type === 'PDF' && files.find(f => f.name === file.name.replace('.pdf', '.html')) 
-              ? `<a href="/public/${file.name.replace('.pdf', '.html')}" target="_blank" class="btn btn-sm btn-outline-secondary me-2" title="View HTML Preview"><i class="fas fa-eye"></i> HTML</a>` 
-              : ''}
-            <button class="btn btn-sm btn-outline-danger delete-file-btn" data-filename="${file.name}" title="Delete ${file.name}">
-              <i class="fas fa-trash-alt"></i>
-            </button>
-          </div>
-        `;
-        convertedFilesList.appendChild(listItem);
-      });
-
-      // Add event listeners to new delete buttons
-      document.querySelectorAll('.delete-file-btn').forEach((button) => {
-        button.addEventListener('click', async (event) => {
-          const filename = event.currentTarget.dataset.filename;
-          if (confirm(`Are you sure you want to delete ${filename}? This action cannot be undone.`)) {
-            try {
-              const deleteResponse = await fetch(`/delete-file/${filename}`, {
-                method: 'DELETE',
-              });
-              const result = await deleteResponse.json();
-              if (deleteResponse.ok) {
-                // alert(result.message);
-                fetchConvertedFiles(); // Refresh the list
-                // Show a success toast or small message
-                showToast('File Deleted', result.message, 'success');
-              } else {
-                // alert(`Error: ${result.message}`);
-                showToast('Error Deleting File', result.message, 'danger');
-              }
-            } catch (err) {
-              // alert(`Network error: ${err.message}`);
-              showToast('Network Error', err.message, 'danger');
-            }
-          }
-        });
-      });
-    } catch (error) {
-      convertedFilesList.innerHTML =
-        '<li class="list-group-item text-danger">Error loading files.</li>';
-      console.error('Error fetching files:', error);
-    }
-  }
-
-  // Initial fetch of files
-  fetchConvertedFiles();
-
-  // Load settings for conversion options
-  const pageFormatSelect = document.getElementById('pageFormat');
-  const pageOrientationSelect = document.getElementById('pageOrientation');
-  const codeThemeSelect = document.getElementById('codeTheme');
-  // ... add for text area form as well if they are separate
-  const textPageFormatSelect = document.getElementById('textPageFormat');
-  const textPageOrientationSelect = document.getElementById('textPageOrientation');
-  const textCodeThemeSelect = document.getElementById('textCodeTheme');
-
-
-  async function loadConversionSettings() {
-    try {
-      const response = await fetch('/settings');
-      const settings = await response.json();
-
-      // Populate Page Format
-      populateSelect(pageFormatSelect, settings.pageFormats, settings.defaultPageFormat);
-      populateSelect(textPageFormatSelect, settings.pageFormats, settings.defaultPageFormat);
-
-      // Populate Page Orientation
-      populateSelect(pageOrientationSelect, settings.pageOrientations, settings.defaultPageOrientation);
-      populateSelect(textPageOrientationSelect, settings.pageOrientations, settings.defaultPageOrientation);
-      
-      // Populate Code Theme
-      populateSelect(codeThemeSelect, settings.codeThemes, settings.defaultCodeTheme);
-      populateSelect(textCodeThemeSelect, settings.codeThemes, settings.defaultCodeTheme);
-
-      // Handle Colorblind Friendly option (if it's a checkbox)
-      const colorBlindFriendlyCheckbox = document.getElementById('colorBlindFriendly');
-      if (colorBlindFriendlyCheckbox && settings.colorBlindFriendlyAvailable) {
-        // You might set a default or leave it as is
-      }
-      const textColorBlindFriendlyCheckbox = document.getElementById('textColorBlindFriendly');
-      if (textColorBlindFriendlyCheckbox && settings.colorBlindFriendlyAvailable) {
-        // You might set a default or leave it as is
-      }
-
-    } catch (error) {
-      console.error('Error loading conversion settings:', error);
-      // Optionally, display an error to the user in the settings panel
-    }
-  }
-
-  function populateSelect(selectElement, options, defaultValue) {
-    if (!selectElement) return;
-    selectElement.innerHTML = ''; // Clear existing options
-    options.forEach(optionValue => {
-      const option = document.createElement('option');
-      option.value = optionValue;
-      option.textContent = optionValue.charAt(0).toUpperCase() + optionValue.slice(1); // Capitalize
-      if (optionValue === defaultValue) {
-        option.selected = true;
-      }
-      selectElement.appendChild(option);
-    });
-  }
-
-  // Load settings when the page loads
-  loadConversionSettings();
-
-  // Live preview iframe update
-  const markdownTextArea = document.getElementById('markdownText');
-  const livePreviewFrame = document.getElementById('livePreviewFrame');
-  const refreshPreviewButton = document.getElementById('refreshPreview');
-
-  function updateLivePreview() {
-    if (!livePreviewFrame) return;
-    // A simple way to refresh is to change the src attribute, forcing a reload.
-    // This assumes your /live-preview endpoint can take the markdown content
-    // or that you have another mechanism to update it (e.g., via postMessage or a backend update).
-    // For simplicity, we'll just reload the iframe which should pick up the latest example.md or default.
-    // A more advanced implementation would send the current text area content to the server
-    // or render it client-side if possible.
-    livePreviewFrame.src = '/live-preview?cache_bust=' + new Date().getTime();
-  }
-
-  if (markdownTextArea && livePreviewFrame && refreshPreviewButton) {
-    // Initial load
-    // updateLivePreview(); // Uncomment if you want to load preview on page load
-
-    // Refresh button
-    refreshPreviewButton.addEventListener('click', updateLivePreview);
-
-    // Optional: Update preview on text change (can be performance intensive)
-    let debounceTimer;
-    markdownTextArea.addEventListener('input', () => {
-      // Debounce to avoid too many updates
-      // clearTimeout(debounceTimer);
-      // debounceTimer = setTimeout(updateLivePreview, 500);
-      // For now, let's keep it manual with the refresh button to avoid complexity
-    });
-  }
-
-  // Toast functionality
-  const toastContainer = document.getElementById('toastContainer');
-  function showToast(title, message, type = 'info') { // type can be primary, secondary, success, danger, warning, info, light, dark
-    if (!toastContainer) {
-      console.warn('Toast container not found. Cannot display toast.');
-      alert(`${title}: ${message}`); // Fallback to alert
-      return;
-    }
-
-    const toastId = 'toast-' + Date.now();
-    const toastHtml = `
-      <div id="${toastId}" class="toast align-items-center text-bg-${type} border-0" role="alert" aria-live="assertive" aria-atomic="true">
-        <div class="d-flex">
-          <div class="toast-body">
-            <strong>${title}</strong><br>
-            ${message}
-          </div>
-          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-      </div>
-    `;
-    toastContainer.insertAdjacentHTML('beforeend', toastHtml);
-    const toastElement = document.getElementById(toastId);
-    const toast = new bootstrap.Toast(toastElement, { delay: 5000 }); // Auto-hide after 5 seconds
-    toast.show();
-    // Remove the toast from DOM after it's hidden to prevent clutter
-    toastElement.addEventListener('hidden.bs.toast', () => {
-      toastElement.remove();
-    });
-  }
-
-  // Example: showToast('Info', 'This is an informational message.', 'info');
-  // Example: showToast('Success!', 'Operation completed successfully.', 'success');
 });
+
+// Options to save/load - DECLARE EARLIER
+const optionsToSave = [
+  { id: 'page-size', type: 'value' },
+  { id: 'theme-select', type: 'value' },
+  { id: 'page-orientation', type: 'value' },
+  { id: 'margin-top', type: 'value' },
+  { id: 'margin-bottom', type: 'value' },
+  { id: 'margin-left', type: 'value' },
+  { id: 'margin-right', type: 'value' },
+  { id: 'custom-css', type: 'value' },
+  { id: 'header-template', type: 'value' },
+  { id: 'footer-template', type: 'value' },
+];
+
+// Theme control (light/dark/auto)
+const themeToggle = document.getElementById('theme-toggle');
+const themeOptions = document.querySelectorAll('.theme-option');
+const themeIcon = themeToggle.querySelector('i');
+const htmlElement = document.documentElement;
+
+function updateHighlightTheme(selectedThemeOption, currentBsTheme) {
+  // Esta función ya no es necesaria o necesitaría una reescritura completa si se mantiene highlight.js sin temas dinámicos.
+  // Por ahora, la eliminamos o la dejamos vacía si alguna parte de la lógica aún la llama.
+  // console.log("updateHighlightTheme llamada pero la funcionalidad de temas de highlight.js ha sido eliminada.");
+}
+
+function applyThemeSetting(theme) {
+  // Determine the theme to apply
+  // For 'auto', check system preference
+  const effectiveTheme = theme === 'auto' 
+    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') 
+    : theme;
+  
+  // Apply theme to document
+  htmlElement.setAttribute('data-bs-theme', effectiveTheme);
+  localStorage.setItem('theme', theme); // Store user preference (light/dark/auto/cristopher)
+  
+  // Update theme toggle icon based on current effective theme
+  if (themeToggle && themeIcon) { // Ensure elements exist
+    if (theme === 'auto') {
+      themeIcon.className = 'fas fa-magic';
+    } else if (theme === 'cristopher') {
+      themeIcon.className = 'fas fa-star'; // Corrected icon for Cristopher theme
+    } else {
+      themeIcon.className = effectiveTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+    }
+  }
+  
+  // Update the active state in dropdown menu
+  themeOptions.forEach(option => {
+    if (option.dataset.theme === theme) {
+      option.classList.add('active');
+    } else {
+      option.classList.remove('active');
+    }
+  });
+}
+
+// Register listeners for system color scheme changes
+const systemDarkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+systemDarkModeMediaQuery.addEventListener('change', (e) => {
+  const currentTheme = localStorage.getItem('theme') || 'auto';
+  if (currentTheme === 'auto') {
+    applyThemeSetting('auto'); // Re-apply auto theme when system preference changes
+  }
+});
+
+// Check if there's a saved theme preference or default to auto
+let initialTheme = localStorage.getItem('theme');
+if (!initialTheme) {
+  initialTheme = 'auto'; // Default to auto theme if not set
+}
+applyThemeSetting(initialTheme); // Apply initial theme
+
+// Theme dropdown option click handler
+themeOptions.forEach(option => {
+  option.addEventListener('click', function() {
+    const selectedTheme = this.dataset.theme;
+    applyThemeSetting(selectedTheme);
+  });
+});
+
+// Display selected filename and change upload area style
+const markdownFileInput = document.getElementById('markdown-file');
+const fileNameDisplay = document.getElementById('file-name-display');
+const fileUploadArea = document.querySelector('.file-upload');
+
+markdownFileInput.addEventListener('change', function (e) {
+  const file = e.target.files[0];
+  if (file) {
+    fileNameDisplay.textContent = file.name;
+    fileUploadArea.classList.add('border-success');
+    fileUploadArea.classList.remove(
+      'border-primary',
+      'border-info',
+      'bg-info-subtle',
+      'bg-light'
+    );
+  } else {
+    fileNameDisplay.textContent =
+      'Drag your Markdown file here or click to select';
+    fileUploadArea.classList.remove('border-success', 'border-info', 'bg-info-subtle');
+    fileUploadArea.classList.add('border-primary', 'bg-light');
+  }
+});
+
+// Function to check and load existing documents
+async function checkExistingDocuments() {
+  const documentsListEl = document.getElementById('documents-list');
+  const noDocumentsEl = document.getElementById('no-documents');
+
+  try {
+    const response = await fetch('/list-files'); // Changed from /public-files to /list-files
+    if (!response.ok) throw new Error('Could not retrieve files');
+    const responseData = await response.json();
+
+    if (!responseData.success || !Array.isArray(responseData.files)) {
+      console.error(
+        'Server response did not contain a valid file list:',
+        responseData
+      );
+      throw new Error('Invalid file response format.');
+    }
+
+    const filesArray = responseData.files;
+
+    documentsListEl.innerHTML = ''; // Clear list
+    let hasDocuments = false;
+
+    const uniqueBaseNames = new Set();
+    filesArray.forEach((file) => {
+      if (file.endsWith('.html') || file.endsWith('.pdf')) {
+        uniqueBaseNames.add(file.split('.').slice(0, -1).join('.'));
+      }
+    });
+
+    uniqueBaseNames.forEach((baseName) => {
+      updateDocumentsList(baseName + '.md', new Date(), false); // false to not show notification
+      hasDocuments = true;
+    });
+
+    if (hasDocuments) {
+      documentsListEl.classList.remove('d-none');
+      noDocumentsEl.classList.add('d-none');
+    } else {
+      documentsListEl.classList.add('d-none');
+      noDocumentsEl.classList.remove('d-none');
+    }
+  } catch (error) {
+    console.error('Error loading existing documents:', error);
+    documentsListEl.classList.add('d-none');
+    noDocumentsEl.classList.remove('d-none');
+  }
+}
+
+// Handle Markdown file upload
+document.getElementById('upload-form').addEventListener('submit', async function (e) {
+  e.preventDefault();
+
+  const fileInput = document.getElementById('markdown-file');
+  const file = fileInput.files[0];
+
+  if (!file) {
+    showNotification(
+      '<i class="fas fa-exclamation-circle me-1"></i> Please select a Markdown file (.md).',
+      'error'
+    );
+    return;
+  }
+
+  const loadingEl = document.getElementById('loading');
+  loadingEl.classList.remove('d-none');
+  loadingEl.classList.add('d-flex');
+
+  const pageSize = document.getElementById('page-size')?.value || 'A4';
+  const codeThemeOption = document.getElementById('theme-select')?.selectedOptions[0];
+  const codeThemeValue = codeThemeOption ? codeThemeOption.value : 'github';
+  const pageOrientation = document.getElementById('page-orientation')?.value || 'portrait';
+  const marginTop = document.getElementById('margin-top')?.value;
+  const marginBottom = document.getElementById('margin-bottom')?.value;
+  const marginLeft = document.getElementById('margin-left')?.value;
+  const marginRight = document.getElementById('margin-right')?.value;
+  const customCSS = document.getElementById('custom-css')?.value || '';
+  const headerTemplate = document.getElementById('header-template')?.value || '';
+  const footerTemplate = document.getElementById('footer-template')?.value || '';
+
+  const formData = new FormData();
+  formData.append('markdown-file', file);
+  formData.append('pageSize', pageSize);
+  formData.append('codeTheme', codeThemeValue); // Send theme value, not CSS filename
+  formData.append('orientation', pageOrientation);
+  if (marginTop) formData.append('marginTop', marginTop + 'mm');
+  if (marginBottom) formData.append('marginBottom', marginBottom + 'mm');
+  if (marginLeft) formData.append('marginLeft', marginLeft + 'mm');
+  if (marginRight) formData.append('marginRight', marginRight + 'mm');
+  if (customCSS.trim()) formData.append('customCSS', customCSS);
+  if (headerTemplate.trim()) formData.append('headerTemplate', headerTemplate);
+  if (footerTemplate.trim()) formData.append('footerTemplate', footerTemplate);
+
+  const statusElement = document.getElementById('processing-status');
+  const updateStatus = (message) => {
+    if (statusElement) statusElement.textContent = message;
+  };
+
+  try {
+    updateStatus('Sending file...');
+    // Progress simulation
+    setTimeout(() => updateStatus('Converting to HTML...'), 300);
+    setTimeout(() => updateStatus('Generating PDF...'), 1000);
+
+    const response = await fetch('/api/convert', {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const errorData = await response
+        .json()
+        .catch(() => ({ error: `Server error: ${response.status}` }));
+      throw new Error(errorData.error || `HTTP Error: ${response.status}`);
+    }
+
+    updateStatus('Processing result...');
+    const result = await response.json();
+
+    if (result.success) {
+      showNotification(
+        '<i class="fas fa-check-circle me-1"></i> File converted successfully!',
+        'success'
+      );
+      updateDocumentsList(result.filename, new Date(), true); // true to show notification
+      fileInput.value = ''; // Clear input
+      // Trigger change event to reset filename display and upload area style
+      fileInput.dispatchEvent(new Event('change'));
+      document.getElementById('markdown-preview').classList.add('d-none'); // Hide preview
+    } else {
+      throw new Error(result.error || 'Unknown error converting file.');
+    }
+  } catch (error) {
+    console.error('Conversion error:', error);
+    showNotification(
+      `<i class="fas fa-exclamation-triangle me-1"></i> Error: ${error.message}`,
+      'error'
+    );
+  } finally {
+    loadingEl.classList.add('d-none');
+    loadingEl.classList.remove('d-flex');
+    updateStatus('Processing...'); // Reset status
+  }
+});
+
+// Save and load option preferences
+function saveOptions() {
+  optionsToSave.forEach(opt => {
+    const element = document.getElementById(opt.id);
+    if (element) {
+      localStorage.setItem(`option_${opt.id}`, element[opt.type]);
+    }
+  });
+  showNotification('<i class="fas fa-save me-1"></i> Preferences saved.', 'success');
+}
+
+function loadOptions() {
+  optionsToSave.forEach(opt => {
+    const savedValue = localStorage.getItem(`option_${opt.id}`);
+    if (savedValue !== null) {
+      const element = document.getElementById(opt.id);
+      if (element) {
+        element[opt.type] = savedValue;
+        // Trigger change event for selectors to update UI if needed (e.g. highlight theme)
+        if (element.tagName === 'SELECT') {
+          element.dispatchEvent(new Event('change'));
+        }
+      }
+    }
+  });
+}
+
+function resetOptions() {
+  const defaultValues = {
+    'page-size': 'A4',
+    'theme-select': 'github',
+    'page-orientation': 'portrait',
+    'margin-top': '',
+    'margin-bottom': '',
+    'margin-left': '',
+    'margin-right': '',
+    'custom-css': '',
+    'header-template': '', // Modified to be empty by default
+    'footer-template': '', // Modified to be empty by default
+  };
+
+  optionsToSave.forEach(opt => {
+    const element = document.getElementById(opt.id);
+    if (element) {
+      element[opt.type] = defaultValues[opt.id] || '';
+      if (element.tagName === 'SELECT') {
+        element.dispatchEvent(new Event('change'));
+      }
+    }
+  });
+  showNotification('<i class="fas fa-undo me-1"></i> Options reset to default values.', 'info');
+  optionsToSave.forEach(opt => localStorage.removeItem(`option_${opt.id}`));
+}
+
+function showNotification(message, type = 'info', duration = 5000) {
+  const existingNotifications = document.querySelectorAll('.alert.notification-toast');
+  existingNotifications.forEach((notif) => {
+    const bsAlert = bootstrap.Alert.getInstance(notif);
+    if (bsAlert) bsAlert.close();
+    else notif.remove();
+  });
+
+  const alertClass =
+    type === 'success' ? 'alert-success' : type === 'error' ? 'alert-danger' : 'alert-info'; // default to info
+
+  const notification = document.createElement('div');
+  notification.className = `alert ${alertClass} alert-dismissible fade show shadow-sm notification-toast position-fixed top-0 end-0 m-3`;
+  notification.style.zIndex = '1100'; // Ensure it's above other elements
+  notification.setAttribute('role', 'alert');
+  notification.innerHTML = `
+    ${message}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  `;
+
+  document.body.appendChild(notification); // Add to body for fixed positioning
+
+  setTimeout(() => {
+    const bsAlert = bootstrap.Alert.getInstance(notification);
+    if (bsAlert) bsAlert.close();
+    else notification.remove();
+  }, duration);
+}
+
+function updateDocumentsList(filename, creationDate, showNotif = true) {
+  const documentsListEl = document.getElementById('documents-list');
+  const noDocumentsEl = document.getElementById('no-documents');
+
+  documentsListEl.classList.remove('d-none');
+  noDocumentsEl.classList.add('d-none');
+
+  const baseName = filename.replace(/\.md$/, '');
+  const dateToDisplay = creationDate || new Date(); // Use provided date or current date
+
+  // Avoid duplicates based on baseName
+  const existingItem = documentsListEl.querySelector(`[data-basename="${baseName}"]`);
+  if (existingItem) {
+    // Optional: update timestamp if needed, or just do nothing.
+    // For now, if it already exists, we don't re-add it.
+    // You might want to update the timestamp if the file is converted again.
+    const timestampEl = existingItem.querySelector('.document-timestamp');
+    if (timestampEl) {
+      timestampEl.textContent = `Reconverted: ${dateToDisplay.toLocaleString()}`;
+    }
+    if (showNotif && filename.endsWith('.md')) {
+      // Only notify if it's a new MD conversion
+      showNotification(
+        `<i class="fas fa-sync-alt me-1"></i> "${baseName}.md" updated.`,
+        'info'
+      );
+    }
+    return; // Don't add duplicate
+  }
+
+  const newItem = document.createElement('div');
+  newItem.className =
+    'list-group-item list-group-item-action d-flex justify-content-between align-items-center flex-wrap gap-2';
+  newItem.setAttribute('data-basename', baseName);
+  newItem.setAttribute('data-date', dateToDisplay.getTime().toString()); // Save timestamp for sorting
+
+  newItem.innerHTML = `
+    <div class="flex-grow-1">
+      <h5 class="mb-1 text-primary">${baseName}.md</h5>
+      <small class="text-muted">Converted: ${dateToDisplay.toLocaleString()}</small>
+    </div>
+    <div class="btn-group" role="group" aria-label="Document actions">
+      <a href="public/${baseName}.html" target="_blank" class="btn btn-sm btn-outline-secondary" title="View HTML of ${baseName}.md">
+        <i class="fas fa-file-alt me-1"></i> HTML
+      </a>
+      <a href="public/${baseName}.pdf" class="btn btn-sm btn-danger" target="_blank" title="View PDF of ${baseName}.md">
+        <i class="fas fa-file-pdf me-1"></i> PDF
+      </a>
+      <button class="btn btn-sm btn-outline-danger delete-btn" title="Delete ${baseName}">
+        <i class="fas fa-trash-alt me-1"></i> Delete
+      </button>
+    </div>
+  `;
+
+  // Insert sorted by date (most recent first)
+  const existingItems = Array.from(documentsListEl.children);
+  let inserted = false;
+  for (const item of existingItems) {
+    if (dateToDisplay.getTime() > parseInt(item.dataset.date || '0')) {
+      documentsListEl.insertBefore(newItem, item);
+      inserted = true;
+      break;
+    }
+  }
+  if (!inserted) {
+    documentsListEl.appendChild(newItem);
+  }
+
+  // Add event listener for delete button
+  const deleteButton = newItem.querySelector('.delete-btn');
+  deleteButton.addEventListener('click', async () => {
+    const confirmDelete = confirm(
+      `Are you sure you want to delete the files associated with "${baseName}.md"?`
+    );
+    if (confirmDelete) {
+      try {
+        const response = await fetch(`/api/convert/delete/${baseName}`, { method: 'DELETE' });
+        const result = await response.json();
+        if (result.success) {
+          newItem.remove();
+          showNotification(
+            `<i class="fas fa-check-circle me-1"></i> "${baseName}.md" files deleted.`,
+            'success'
+          );
+          // Check if list is empty after deletion
+          if (documentsListEl.children.length === 0) {
+            noDocumentsEl.classList.remove('d-none');
+            documentsListEl.classList.add('d-none');
+          }
+        } else {
+          showNotification(
+            `<i class="fas fa-exclamation-triangle me-1"></i> Error deleting: ${result.error}`,
+            'error'
+          );
+        }
+      } catch (error) {
+        showNotification(
+          `<i class="fas fa-exclamation-triangle me-1"></i> Network error while deleting: ${error.message}`,
+          'error'
+        );
+      }
+    }
+  });
+
+  if (showNotif && filename.endsWith('.md')) {
+    // Only notify if it's a new MD conversion
+    showNotification(
+      `<i class="fas fa-check-circle me-1"></i> "${baseName}.md" added to the list.`,
+      'success'
+    );
+  }
+}
+
+// Drag and drop functionality
+const dropArea = document.querySelector('.file-upload');
+
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach((eventName) => {
+  dropArea.addEventListener(eventName, preventDefaults, false);
+});
+
+function preventDefaults(e) {
+  e.preventDefault();
+  e.stopPropagation();
+}
+
+['dragenter', 'dragover'].forEach((eventName) => {
+  dropArea.addEventListener(
+    eventName,
+    () => {
+      if (!dropArea.classList.contains('border-success')) {
+        // Don't change if there's already a valid file
+        dropArea.classList.add('border-info', 'bg-info-subtle');
+        dropArea.classList.remove('border-primary', 'bg-light');
+      }
+    },
+    false
+  );
+});
+
+['dragleave', 'drop'].forEach((eventName) => {
+  dropArea.addEventListener(
+    eventName,
+    () => {
+      if (!dropArea.classList.contains('border-success')) {
+        dropArea.classList.remove('border-info', 'bg-info-subtle');
+        dropArea.classList.add('border-primary', 'bg-light');
+      }
+    },
+    false
+  );
+});
+
+dropArea.addEventListener(
+  'drop',
+  (e) => {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+
+    if (files.length > 0) {
+      const fileInput = document.getElementById('markdown-file');
+      fileInput.files = files;
+      const event = new Event('change', { bubbles: true });
+      fileInput.dispatchEvent(event); // To update UI and preview
+    }
+  },
+  false
+);
