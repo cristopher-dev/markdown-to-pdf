@@ -101,6 +101,17 @@ document.getElementById('markdown-file')?.addEventListener('change', function (e
   };
 
   reader.readAsText(file);
+
+  const formData = new FormData();
+  formData.append('markdownFile', file);
+
+  // Get font size value
+  const fontSizeInput = document.getElementById('font-size');
+  if (fontSizeInput && fontSizeInput.value) {
+    formData.append('fontSize', fontSizeInput.value);
+  }
+
+  // Show loading indicator
 });
 
 // Initialize highlight.js after the DOM is fully loaded

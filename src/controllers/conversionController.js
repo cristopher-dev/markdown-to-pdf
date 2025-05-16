@@ -31,6 +31,7 @@ const handleConversion = PUBLIC_DIR_FOR_UPLOADS => async (req, res, next) => {
       customCSS: req.body.customCSS, // This will be passed to the conversion service
       headerTemplate: req.body.headerTemplate,
       footerTemplate: req.body.footerTemplate,
+      fontSize: req.body.fontSize, // Add fontSize to conversionOptions
     };
 
     // The path to custom-styles.css must now be relative to the new public location

@@ -122,7 +122,7 @@ hr {
 /* Print-specific styles */
 @media print {
   body {
-    font-size: 12pt;
+    font-size: var(--print-font-size, 12pt); /* Usar variable CSS o un valor predeterminado */
     margin: 0;
     padding: 0;
   }

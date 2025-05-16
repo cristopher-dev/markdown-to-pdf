@@ -46,6 +46,7 @@ const ensurePublicDirectoryExists = outputBaseName => {
  * @param {string} options.customCSS - Custom CSS
  * @param {string} options.headerTemplate - Header template
  * @param {string} options.footerTemplate - Footer template
+ * @param {string} options.fontSize - Font size
  * @returns {Promise<{html: string, pdf: string}>} - Paths to generated files
  */
 async function convertMarkdownToPDF(
@@ -66,6 +67,7 @@ async function convertMarkdownToPDF(
     customCSS = '',
     headerTemplate = '',
     footerTemplate = '',
+    fontSize = process.env.DEFAULT_FONT_SIZE || '16px', // Add fontSize with a default value
   } = options;
 
   const htmlContent = markdownIt.render(markdownContent);
@@ -83,8 +85,17 @@ async function convertMarkdownToPDF(
       <title>${path.basename(outputBaseName)}</title>
       <style>
         /* Base styles */
-        body { font-family: sans-serif; margin: 0; padding: 20px; }
-        article { max-width: 800px; margin: auto; }
+        body { 
+          font-family: sans-serif; 
+          margin: 0; 
+          padding: 20px; 
+          font-size: ${fontSize}; /* Apply dynamic font size to body */
+        }
+        /* Ensure markdown-body inherits font-size or has its own if needed */
+        article.markdown-body { 
+          margin: auto; 
+          /* font-size: ${fontSize}; /* Optionally set here as well if body inheritance is not enough */
+        }
         img { max-width: 100%; height: auto; }
         table { border-collapse: collapse; width: 100%; margin-bottom: 1em; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
