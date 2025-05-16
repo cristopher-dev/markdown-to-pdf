@@ -4,7 +4,7 @@ const path = require('path');
 const { convertMarkdownToPDF } = require('../services/conversionService');
 const { generatePreviewTemplate } = require('../utils/previewTemplate');
 
-// Esta función necesita PUBLIC_DIR_FOR_UPLOADS para saber dónde guardar los archivos
+// This function needs PUBLIC_DIR_FOR_UPLOADS to know where to save the files
 const handleConversion = (PUBLIC_DIR_FOR_UPLOADS) => async (req, res, next) => {
   if (!req.file) {
     return res.status(400).json({ success: false, error: 'No file was uploaded.' });
@@ -14,7 +14,7 @@ const handleConversion = (PUBLIC_DIR_FOR_UPLOADS) => async (req, res, next) => {
     const filePath = req.file.path;
     const fileName = req.file.originalname;
     const baseName = path.basename(fileName, path.extname(fileName));
-    // Asegúrate de que outputBaseName apunte al directorio public correcto en la raíz del proyecto
+    // Ensure outputBaseName points to the correct public directory at the project root
     const outputBaseName = path.join(PUBLIC_DIR_FOR_UPLOADS, baseName);
 
     const markdownContent = fs.readFileSync(filePath, 'utf8');
@@ -28,19 +28,19 @@ const handleConversion = (PUBLIC_DIR_FOR_UPLOADS) => async (req, res, next) => {
       marginBottom: req.body.marginBottom,
       marginLeft: req.body.marginLeft,
       marginRight: req.body.marginRight,
-      customCSS: req.body.customCSS, // Este se pasará al servicio de conversión
+      customCSS: req.body.customCSS, // This will be passed to the conversion service
       headerTemplate: req.body.headerTemplate,
       footerTemplate: req.body.footerTemplate,
     };
     
-    // La ruta a custom-styles.css ahora debe ser relativa a la nueva ubicación de public
+    // The path to custom-styles.css must now be relative to the new public location
     const customStylesPath = path.join(__dirname, '..', 'public', 'css', 'custom-styles.css');
 
 
     const results = await convertMarkdownToPDF(
       markdownContent,
       outputBaseName,
-      customStylesPath, // Ruta actualizada a custom-styles.css
+      customStylesPath, // Updated path to custom-styles.css
       conversionOptions
     );
 
@@ -58,9 +58,9 @@ const handleConversion = (PUBLIC_DIR_FOR_UPLOADS) => async (req, res, next) => {
     res.json({
       success: true,
       filename: fileName,
-      // Las rutas devueltas al cliente deben ser relativas a la raíz del servidor web
-      html: path.join('public', path.basename(results.html)), // ej: /public/nombre.html
-      pdf: path.join('public', path.basename(results.pdf)),   // ej: /public/nombre.pdf
+      // Paths returned to the client must be relative to the web server root
+      html: path.join('public', path.basename(results.html)), // e.g., /public/name.html
+      pdf: path.join('public', path.basename(results.pdf)),   // e.g., /public/name.pdf
     });
   } catch (error) {
     if (req.file && req.file.path && fs.existsSync(req.file.path)) {
@@ -74,7 +74,7 @@ const handleConversion = (PUBLIC_DIR_FOR_UPLOADS) => async (req, res, next) => {
 
 const handleExampleConversion = (PUBLIC_DIR_FOR_UPLOADS) => async (req, res, next) => {
   try {
-    // README.md está en la raíz del proyecto
+    // README.md is located at the project root
     const readmePath = path.join(__dirname, '..', '..', 'README.md');
     if (!fs.existsSync(readmePath)) {
       return res.status(404).json({ success: false, error: 'README.md file not found.' });

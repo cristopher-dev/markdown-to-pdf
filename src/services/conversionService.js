@@ -1,14 +1,14 @@
 // filepath: /home/markdown-to-pdf/convert.js
-require('dotenv').config(); // Cargar variables de entorno
+require('dotenv').config(); // Load environment variables
 const fs = require('fs');
 const path = require('path');
 const puppeteer = require('puppeteer');
 const markdownIt = require('markdown-it')({
-  html: true, // Habilitar HTML tags en source
-  linkify: true, // Autoconvertir URLs tipo texto en links
-  typographer: true, // Habilitar algunas sustituciones de comillas inteligentes, etc.
+  html: true, // Enable HTML tags in source
+  linkify: true, // Autoconvert URL-like text to links
+  typographer: true, // Enable some smart quotes substitutions, etc.
   highlight: function (str, lang) {
-    // Añadir resaltado de sintaxis
+    // Add syntax highlighting
     if (lang && hljs.getLanguage(lang)) {
       try {
         return (
@@ -20,10 +20,10 @@ const markdownIt = require('markdown-it')({
     }
     return '<pre class="hljs"><code>' + markdownIt.utils.escapeHtml(str) + '</code></pre>';
   },
-}).use(require('markdown-it-footnote')); // Añadir soporte para notas al pie
+}).use(require('markdown-it-footnote')); // Add support for footnotes
 const hljs = require('highlight.js');
 
-// Asegurarse de que el directorio public exista en la raíz del proyecto
+// Ensure that the public directory exists at the project root
 const ensurePublicDirectoryExists = (outputBaseName) => {
   const publicDir = path.dirname(outputBaseName);
   if (!fs.existsSync(publicDir)) {
@@ -50,8 +50,8 @@ const ensurePublicDirectoryExists = (outputBaseName) => {
  */
 async function convertMarkdownToPDF(
   markdownContent,
-  outputBaseName, // ej: /home/markdown-to-pdf/public/nombreArchivo
-  customCSSPath, // ej: /home/markdown-to-pdf/src/public/css/custom-styles.css
+  outputBaseName, // e.g., /home/markdown-to-pdf/public/fileName
+  customCSSPath, // e.g., /home/markdown-to-pdf/src/public/css/custom-styles.css
   options = {}
 ) {
   ensurePublicDirectoryExists(outputBaseName);
@@ -125,7 +125,7 @@ async function convertMarkdownToPDF(
   await page.setContent(fullHtml, { waitUntil: 'networkidle0' });
 
   const pdfPath = `${outputBaseName}.pdf`;
-  const htmlPath = `${outputBaseName}.html`; // Guardar también el HTML procesado
+  const htmlPath = `${outputBaseName}.html`; // Also save the processed HTML
 
   await page.pdf({
     path: pdfPath,
@@ -139,13 +139,13 @@ async function convertMarkdownToPDF(
       left: marginLeft,
     },
     displayHeaderFooter: !!(headerTemplate || footerTemplate),
-    headerTemplate: headerTemplate || '<div></div>', // Puppeteer requiere un string, incluso vacío
+    headerTemplate: headerTemplate || '<div></div>', // Puppeteer requires a string, even empty
     footerTemplate: footerTemplate || '<div></div>',
   });
 
   await browser.close();
 
-  // Guardar el HTML completo que se usó para generar el PDF (para vista previa o depuración)
+  // Save the full HTML that was used to generate the PDF (for preview or debugging)
   fs.writeFileSync(htmlPath, fullHtml);
 
   return { pdf: pdfPath, html: htmlPath };
@@ -157,7 +157,7 @@ if (require.main === module) {
     try {
       // Read the specified file or default to README.md
       const inputFile = process.argv[2] || 'README.md';
-      console.log(`🔍 Leyendo archivo Markdown: ${inputFile}`);
+      console.log(`🔍 Reading Markdown file: ${inputFile}`);
 
       const markdownContent = fs.readFileSync(inputFile, 'utf8');
 

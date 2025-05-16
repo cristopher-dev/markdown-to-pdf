@@ -1,44 +1,41 @@
-# Fonts for Markdown to PDF Converter
+<!--
+This directory contains resources related to font setup for the Docker container
+used by the Markdown to PDF converter.
+-->
 
-This directory contains resources related to font setup for the Docker container used by the Markdown to PDF converter.
-
-## `setup-fonts.sh`
+### `setup-fonts.sh`
 
 This shell script is executed during the Docker image build process (`Dockerfile`). Its main purposes are:
 
-1.  **Install Microsoft TrueType Core Fonts:**
+1. **Install Microsoft TrueType Core Fonts:**
 
-    - Downloads and installs the `msttcorefonts` package, which includes common fonts like Arial, Times New Roman, Comic Sans MS, etc.
-    - This helps improve compatibility and rendering fidelity for documents that might expect these fonts.
+   - It runs `echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections` to automatically accept the EULA for Microsoft fonts.
+   - Then, it installs `ttf-mscorefonts-installer` using `apt-get install -y`.
+   - This helps improve compatibility and rendering fidelity for documents that might expect these fonts.
 
-2.  **Install Noto Fonts for CJK and Emoji Support:**
+2. **Install Noto Color Emoji Font:**
 
-    - Installs `fonts-noto-cjk` for better rendering of Chinese, Japanese, and Korean characters.
-    - Installs `fonts-noto-color-emoji` for displaying color emojis in the generated PDFs.
+   - It installs `fonts-noto-color-emoji` using `apt-get install -y`.
+   - Installs `fonts-noto-color-emoji` for displaying color emojis in the generated PDFs.
 
-3.  **Update Font Cache:**
-    - Runs `fc-cache -fv` to rebuild the font cache, ensuring that the newly installed fonts are recognized by the system and applications like Puppeteer (via Chrome).
+3. **Clear Font Caches:**
+   - Executes `fc-cache -f -v` to rebuild font information caches. This ensures that the newly installed fonts are recognized by the system and applications like Puppeteer.
 
-## `windows-fonts-readme.md`
+### `windows-fonts-readme.md`
 
-This file provides specific instructions and considerations for users who might want to use or ensure compatibility with Windows-specific fonts beyond the core TrueType set. It might include:
+This file likely contains instructions or notes specifically about using or installing common Windows fonts (like Arial, Times New Roman, Calibri, etc.) within the Docker environment or for the conversion process. This might involve:
 
-- Information on how to legally obtain and install other Windows fonts in a Linux environment (if applicable).
-- Notes on font substitution if certain Windows fonts are not available.
+- Guidance on legally obtaining and copying these font files into the Docker image.
+- Configuration steps if these fonts require special handling.
+- Reasons why these specific fonts might be important for certain documents (e.g., corporate templates).
 
-## Usage in Dockerfile
+### Purpose of Managing Fonts in Docker
 
-The `Dockerfile` copies this `Fonts` directory into the image and then executes `setup-fonts.sh` to perform the font installations.
+When Puppeteer (or any headless browser) generates a PDF from HTML, it needs access to the fonts referenced in the HTML/CSS. If the required fonts are not available in the Docker container where Puppeteer is running, it will fall back to default fonts, which can lead to:
 
-```dockerfile
-# ... (other Dockerfile commands)
-
-# Configurar las fuentes y emojis
-COPY Fonts/ /usr/src/app/Fonts/
-RUN chmod +x /usr/src/app/Fonts/setup-fonts.sh && \
-    /usr/src/app/Fonts/setup-fonts.sh
-
-# ... (other Dockerfile commands)
-```
+- Incorrect text rendering (wrong font used).
+- Layout issues (due to different font metrics).
+- Missing characters (especially for special symbols or non-Latin scripts).
+- Inconsistent appearance compared to viewing the HTML in a browser with those fonts installed locally.
 
 By managing fonts this way, the Docker image becomes more self-contained and capable of rendering a wider variety of Markdown documents accurately.

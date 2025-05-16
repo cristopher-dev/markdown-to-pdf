@@ -11,12 +11,12 @@ const path = require('path');
  */
 function generatePreviewTemplate(fileName, htmlContent, options = {}) {
   const {
-    colorBlindFriendly = false, // Esto podría seguir siendo relevante si tienes estilos -cb para el tema base
+    colorBlindFriendly = false, // Color-blind friendly could still be relevant if you have -cb styles for the base theme
   } = options;
 
-  // La ruta al CSS del tema de resaltado ahora debe ser relativa a la ubicación de este archivo
-  // o, mejor aún, una ruta accesible públicamente si el preview se sirve.
-  const customStylesWebPath = '/css/custom-styles.css'; // Mantener estilos personalizados
+  // The path to the highlight theme CSS should now be relative to this file's location
+  // or, even better, a publicly accessible path if the preview is served.
+  const customStylesWebPath = '/css/custom-styles.css'; // Maintain custom styles
 
   return `
     <!DOCTYPE html>
@@ -25,7 +25,7 @@ function generatePreviewTemplate(fileName, htmlContent, options = {}) {
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Preview: ${fileName}</title>
-      <!-- Usar rutas web para los CSS -->
+      <!-- Use web paths for CSS -->
       <link rel="stylesheet" href="${customStylesWebPath}">
       <style>
         body { font-family: sans-serif; margin: 20px; background-color: #f9f9f9; color: #333; }
@@ -36,9 +36,9 @@ function generatePreviewTemplate(fileName, htmlContent, options = {}) {
         .controls { margin-bottom:20px; padding:10px; background-color:#f0f0f0; border-radius:5px; }
         .controls a { margin-right: 10px; text-decoration:none; color: #007bff; }
         .controls a:hover { text-decoration:underline; }
-        /* Estilos adicionales para el contenido de markdown-body si es necesario */
+        /* Additional styles for markdown-body content if needed */
         .markdown-body {
-          /* Estilos base que podrían estar en custom-styles.css o aquí */
+          /* Base styles that might be in custom-styles.css or here */
         }
       </style>
     </head>
@@ -49,7 +49,7 @@ function generatePreviewTemplate(fileName, htmlContent, options = {}) {
           <p>This is a preview of the generated HTML. The PDF version might differ slightly in layout and pagination.</p>
         </div>
         <div class="controls">
-          <!-- Asumimos que los archivos PDF y HTML están en el directorio 'public' en la raíz -->
+          <!-- We assume PDF and HTML files are in the 'public' directory at the root -->
           <a href="/public/${encodeURIComponent(path.basename(fileName, path.extname(fileName)))}.pdf" target="_blank">View PDF</a>
           <a href="/public/${encodeURIComponent(path.basename(fileName, path.extname(fileName)))}.html" target="_blank">View Raw HTML</a>
         </div>

@@ -5,13 +5,13 @@ const path = require('path');
 const MarkdownIt = require('markdown-it');
 const mdFootnote = require('markdown-it-footnote');
 const hljs = require('highlight.js');
-const { convertMarkdownToPDF } = require('../services/conversionService'); // Importar el servicio de conversión
+const { convertMarkdownToPDF } = require('../services/conversionService'); // Import the conversion service
 
-// Inicializar MarkdownIt con plugins y opciones de resaltado
+// Initialize MarkdownIt with plugins and highlighting options
 const md = new MarkdownIt({
-  html: true,        // Habilitar etiquetas HTML en el origen
-  linkify: true,     // Convertir automáticamente texto similar a URL en enlaces
-  typographer: true, // Habilitar algunos reemplazos neutrales al idioma + embellecimiento de comillas
+  html: true,        // Enable HTML tags in source
+  linkify: true,     // Automatically convert URL-like text to links
+  typographer: true, // Enable some smart quotes substitutions, etc.
   highlight: function (str, lang) {
     if (lang && hljs.getLanguage(lang)) {
       try {
@@ -27,13 +27,13 @@ const md = new MarkdownIt({
 module.exports = (PUBLIC_DIR_FOR_UPLOADS) => {
   const router = express.Router();
 
-  // Main route - sirve el index.html desde src/public/views/
+  // Main route - serves index.html from src/public/views/
   router.get('/', (req, res) => {
-    // __dirname aquí es /home/markdown-to-pdf/src/routes
+    // __dirname here is /home/markdown-to-pdf/src/routes
     res.sendFile(path.join(__dirname, '..', 'public', 'views', 'index.html'));
   });
 
-  // Ruta para listar archivos en el directorio public (el de la raíz del proyecto)
+  // Route to list files in the public directory (project root)
   router.get('/list-files', (req, res) => {
     fs.readdir(PUBLIC_DIR_FOR_UPLOADS, (err, files) => {
       if (err) {
@@ -47,7 +47,7 @@ module.exports = (PUBLIC_DIR_FOR_UPLOADS) => {
     });
   });
   
-  // Ruta para obtener detalles de los archivos en public (el de la raíz del proyecto)
+  // Route to get details of files in the public directory (project root)
   router.get('/public-files', (req, res, next) => {
     try {
       const files = fs.readdirSync(PUBLIC_DIR_FOR_UPLOADS);
@@ -71,85 +71,85 @@ module.exports = (PUBLIC_DIR_FOR_UPLOADS) => {
     }
   });
 
-  // Ruta para el ejemplo
-  router.get('/example', async (req, res, next) => { // Convertir a async function
+  // Route for the example
+  router.get('/example', async (req, res, next) => { // Convert to async function
     const exampleMdFilename = "example.md";
     const exampleHtmlFilename = "example.html";
-    const examplePdfFilename = "example.pdf"; // Nombre para el archivo PDF
+    const examplePdfFilename = "example.pdf"; // Name for the PDF file
     const exampleMdPath = path.join(PUBLIC_DIR_FOR_UPLOADS, exampleMdFilename);
     const exampleHtmlPath = path.join(PUBLIC_DIR_FOR_UPLOADS, exampleHtmlFilename);
-    const examplePdfPath = path.join(PUBLIC_DIR_FOR_UPLOADS, examplePdfFilename); // Ruta para el archivo PDF
+    const examplePdfPath = path.join(PUBLIC_DIR_FOR_UPLOADS, examplePdfFilename); // Path for the PDF file
 
     try {
-      // 1. Asegurar que example.md exista
+      // 1. Ensure example.md exists
       if (!fs.existsSync(exampleMdPath)) {
-        const defaultContent = "# Ejemplo de Markdown\n\nEste es un archivo de ejemplo para la funcionalidad de vista previa.\n\n## Características\n\n*   Listas\n*   **Negrita**\n*   *Cursiva*\n\n[Visita Google](https://www.google.com)\n\n## Bloque de código\n\n```javascript\nfunction greet(name) {\n  console.log('Hello, ' + name + '!');\n}\ngreet('World');\n```\n";
+        const defaultContent = "# Markdown Example\n\nThis is an example file for the preview functionality.\n\n## Features\n\n*   Lists\n*   **Bold**\n*   *Italics*\n\n[Visit Google](https://www.google.com)\n\n## Code Block\n\n```javascript\nfunction greet(name) {\n  console.log('Hello, ' + name + '!');\n}\ngreet('World');\n```\n";
         fs.writeFileSync(exampleMdPath, defaultContent, 'utf8');
-        console.log(`Archivo '${exampleMdFilename}' creado en '${PUBLIC_DIR_FOR_UPLOADS}'`);
+        console.log(`File '${exampleMdFilename}' created in '${PUBLIC_DIR_FOR_UPLOADS}'`);
       }
 
-      // 2. Leer example.md
+      // 2. Read example.md
       const markdownContent = fs.readFileSync(exampleMdPath, 'utf8');
 
-      // 3. Convertir Markdown a HTML
+      // 3. Convert Markdown to HTML
       const htmlBodyContent = md.render(markdownContent);
 
-      // 4. Crear el contenido HTML completo
-      // Se asume que tienes CSS en /assets/css/ para estilos generales y de highlight.js
+      // 4. Create the full HTML content
+      // Assume you have CSS in /assets/css/ for general styles and highlight.js
       const fullHtml = `
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vista Previa de Markdown - Ejemplo</title>
+    <title>Markdown Preview - Example</title>
     <link rel="stylesheet" href="/assets/css/style.css"> 
     <link rel="stylesheet" href="/assets/css/custom-styles.css">
-    <!-- Si tienes un CSS específico para highlight.js, añádelo aquí, ej: -->
+    <!-- If you have specific CSS for highlight.js, add it here, e.g.: -->
     <!-- <link rel="stylesheet" href="/assets/css/highlight-theme.css"> -->
 </head>
 <body>
-    <div class="markdown-body container"> <!-- 'markdown-body' es común para estilos de GitHub Flavored Markdown -->
+    <div class="markdown-body container"> <!-- 'markdown-body' is common for GitHub Flavored Markdown styles -->
         ${htmlBodyContent}
     </div>
 </body>
 </html>
       `;
 
-      // 5. Escribir example.html
+      // 5. Write example.html
       fs.writeFileSync(exampleHtmlPath, fullHtml, 'utf8');
-      console.log(`Archivo '${exampleHtmlFilename}' creado/actualizado en '${PUBLIC_DIR_FOR_UPLOADS}'`);
+      console.log(`File '${exampleHtmlFilename}' created/updated in '${PUBLIC_DIR_FOR_UPLOADS}'`);
 
-      // 6. Convertir example.md a PDF
+      // 6. Convert example.md to PDF
       const customStylesPath = path.join(__dirname, '..', 'public', 'css', 'custom-styles.css');
-      const conversionOptions = { // Opciones básicas para el PDF de ejemplo
+      const conversionOptions = { // Basic options for the example PDF
         pageSize: 'A4',
-        codeTheme: 'github', // O el tema por defecto que prefieras
-        // Puedes añadir más opciones si es necesario
+        codeTheme: 'github', // Or the default theme you prefer
+        // You can add more options if necessary
       };
       
-      // El outputBaseName no debe incluir la extensión .pdf, el servicio la añade.
+      // The outputBaseName should not include the .pdf extension, the service adds it.
       const outputBaseNameForPdf = path.join(PUBLIC_DIR_FOR_UPLOADS, path.basename(exampleMdFilename, '.md'));
 
       await convertMarkdownToPDF(
         markdownContent,
-        outputBaseNameForPdf, // ej: /path/to/public/example (sin .pdf)
+        outputBaseNameForPdf, // e.g.: /path/to/public/example (without .pdf)
         customStylesPath,
         conversionOptions
       );
-      console.log(`Archivo '${examplePdfFilename}' creado/actualizado en '${PUBLIC_DIR_FOR_UPLOADS}'`);
+      console.log(`File '${examplePdfFilename}' created/updated in '${PUBLIC_DIR_FOR_UPLOADS}'`);
 
-      // 7. Responder JSON
+      // 7. Respond with JSON
       res.json({
         success: true,
         markdownFile: exampleMdFilename,
         htmlFile: exampleHtmlFilename,
-        pdfFile: examplePdfFilename, // Añadir el nombre del archivo PDF a la respuesta
-        message: `Archivos de ejemplo '${exampleMdFilename}', '${exampleHtmlFilename}' y '${examplePdfFilename}' asegurados y listos.`
+        pdfFile: examplePdfFilename, // Add the PDF file name to the response
+        message: `Example files '${exampleMdFilename}', '${exampleHtmlFilename}', and '${examplePdfFilename}' ensured and ready.`
       });
 
     } catch (error) {
-      console.error(`Error al procesar la ruta /example:`, error);
+      console.error(`Error processing the /example route:`, error);
       next(error); 
     }
   });

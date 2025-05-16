@@ -4,16 +4,16 @@ const path = require('path');
 const fs = require('fs');
 const multer = require('multer');
 const conversionRoutes = require('./routes/conversionRoutes');
-const mainRoutes = require('./routes/mainRoutes'); // Crearemos este para la ruta principal y otras generales
+const mainRoutes = require('./routes/mainRoutes'); // We'll create this for the main route and other general ones
 const errorHandler = require('./middlewares/errorHandler');
 
 const app = express();
 
 // --- Middleware Configuration ---
-// Servir archivos estáticos desde el nuevo directorio 'src/public' bajo el prefijo '/assets'
+// Serve static files from the new directory 'src/public' under the prefix '/assets'
 app.use('/assets', express.static(path.join(__dirname, 'public')));
 
-// Servir archivos estáticos desde el directorio 'public' en la raíz del proyecto bajo el prefijo '/public'
+// Serve static files from the 'public' directory at the project root under the '/public' prefix
 app.use('/public', express.static(path.join(__dirname, '..', 'public')));
 
 app.use(express.urlencoded({ extended: true }));
@@ -27,11 +27,11 @@ app.use((req, res, next) => {
   next();
 });
 
-// --- Multer Configuration (similar a tu server.js original pero con rutas ajustadas) ---
-const UPLOADS_DIR = path.join(__dirname, '..', 'uploads'); // Sube un nivel para llegar a la raíz del proyecto
-const CONVERTED_PDF_DIR = path.join(__dirname, '..', 'public'); // Directorio público en la raíz para archivos generados
+// --- Multer Configuration (similar to your original server.js but with adjusted paths) ---
+const UPLOADS_DIR = path.join(__dirname, '..', 'uploads'); // Go up one level to reach the project root
+const CONVERTED_PDF_DIR = path.join(__dirname, '..', 'public'); // Public directory at the root for generated files
 
-// Crear directorios necesarios si no existen
+// Create necessary directories if they don't exist
 [UPLOADS_DIR, CONVERTED_PDF_DIR].forEach((dir) => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
@@ -61,9 +61,9 @@ const upload = multer({
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
 });
 
-// Pasar 'upload' y 'CONVERTED_PDF_DIR' a las rutas de conversión
-app.use('/api/convert', conversionRoutes(upload, CONVERTED_PDF_DIR)); // Prefijo para rutas de API
-app.use('/', mainRoutes(CONVERTED_PDF_DIR)); // Rutas principales como '/' y '/list-files'
+// Pass 'upload' and 'CONVERTED_PDF_DIR' to conversion routes
+app.use('/api/convert', conversionRoutes(upload, CONVERTED_PDF_DIR)); // Prefix for API routes
+app.use('/', mainRoutes(CONVERTED_PDF_DIR)); // Main routes like '/' and '/list-files'
 
 // --- Error Handling Middleware ---
 app.use(errorHandler);
