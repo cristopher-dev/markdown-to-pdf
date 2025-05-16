@@ -107,7 +107,16 @@ async function convertMarkdownToPDF(
 
   const browser = await puppeteer.launch({
     headless: true,
-    args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage'],
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu',
+      '--single-process',
+      '--font-render-hinting=none'
+    ],
+    ignoreDefaultArgs: ['--enable-automation'],
+    executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
   });
   const page = await browser.newPage();
   await page.setContent(fullHtml, { waitUntil: 'networkidle0' });

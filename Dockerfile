@@ -12,6 +12,7 @@ WORKDIR /usr/src/app
 # libatk1.0-0, libatk-bridge2.0-0, libcups2, libdrm2, libgbm1, libasound2: For headless Chrome
 # libpangocairo-1.0-0, libx11-xcb1, libxcomposite1, libxdamage1, libxfixes3, libxrandr2, libxtst6: More X11/graphics libs
 # ca-certificates, fonts-liberation, lsb-release, wget, xdg-utils: General utilities and fonts
+# libxkbcommon: Required for Chrome keyboard handling
 # --no-install-recommends is used to reduce image size by not installing optional packages
 RUN apt-get update && \
     apt-get install -y \
@@ -29,6 +30,10 @@ RUN apt-get update && \
     libxfixes3 \
     libxrandr2 \
     libxtst6 \
+    libxkbcommon0 \
+    libxshmfence1 \
+    libglu1-mesa \
+    libdbus-glib-1-2 \
     ca-certificates \
     fonts-liberation \
     lsb-release \
@@ -68,6 +73,9 @@ RUN chmod +x ./assets/fonts/setup-fonts.sh && \
 
 # Expose the port the app runs on
 EXPOSE 3000
+
+# Verificar que Puppeteer puede encontrar Chrome y lanzarlo correctamente
+RUN node -e "const puppeteer = require('puppeteer'); async function test() { try { const browser = await puppeteer.launch({headless: true, args:['--no-sandbox', '--disable-setuid-sandbox', '--disable-gpu']}); await browser.close(); console.log('Puppeteer está configurado correctamente.'); } catch (e) { console.error('Error al iniciar Puppeteer:', e); process.exit(1); } }; test();"
 
 # Define the command to run the application
 # This will use the "start" script from package.json

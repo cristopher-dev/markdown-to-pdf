@@ -12,6 +12,12 @@ services:
       - .:/usr/src/app
       - /usr/src/app/node_modules
     environment:
-      - NODE_ENV=development
+      - NODE_ENV=production
       - PORT=3000
+      - DEFAULT_PAGE_SIZE=A4
+      - DEFAULT_ORIENTATION=portrait
+      - DEFAULT_MARGIN_TOP=20mm
+      - DEFAULT_MARGIN_BOTTOM=20mm
+      - DEFAULT_MARGIN_LEFT=20mm
+      - DEFAULT_MARGIN_RIGHT=20mm
     restart: unless-stopped
