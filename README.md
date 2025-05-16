@@ -101,7 +101,7 @@ This project is a web application designed to convert Markdown files into PDF do
      docker-compose down
      ```
 
-   - Once the server is running (either directly or via Docker), you will see a message in the terminal, typically: `Servidor iniciado en http://localhost:3000`.
+   - Once the server is running (either directly or via Docker), you will see a message in the terminal, typically: `Server started at http://localhost:3000`.
 
 4. **🌐 Accessing the Web Interface:**
 
