@@ -41,8 +41,13 @@ RUN apt-get update && \
 COPY package*.json ./
 
 # Install project dependencies
+# Remove --ignore-scripts to allow Puppeteer to download the browser during install.
 # This uses the local .npmrc if present, for potential private registry config
-RUN npm install --production --ignore-scripts
+RUN npm install --production
+
+# Explicitly install the Chrome browser version compatible with Puppeteer.
+# This ensures Chrome is available in the path Puppeteer expects (e.g., /root/.cache/puppeteer).
+RUN npx puppeteer browsers install chrome
 
 # Copy the rest of the application code
 COPY src/ ./src/
