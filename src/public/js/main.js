@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 // Show example file
-document.getElementById('show-example')?.addEventListener('click', async function() {
+document.getElementById('show-example')?.addEventListener('click', async function () {
   const loadingEl = document.getElementById('loading');
   if (loadingEl) {
     loadingEl.classList.remove('d-none');
@@ -25,17 +25,23 @@ document.getElementById('show-example')?.addEventListener('click', async functio
     // The server should now return the filename in the JSON response
     const result = await response.json();
 
-    if (result.success && result.markdownFile) { // Changed result.filename to result.markdownFile
-        updateDocumentsList(result.markdownFile, new Date(), true); // Changed result.filename to result.markdownFile
-        const modeMsg = colorBlindMode ? ' (color blind optimized mode)' : '';
-        showNotification(`<i class="fas fa-check-circle me-1"></i> Example "${result.markdownFile}" successfully loaded${modeMsg}.`, 'success'); // Changed result.filename to result.markdownFile
+    if (result.success && result.markdownFile) {
+      // Changed result.filename to result.markdownFile
+      updateDocumentsList(result.markdownFile, new Date(), true); // Changed result.filename to result.markdownFile
+      const modeMsg = colorBlindMode ? ' (color blind optimized mode)' : '';
+      showNotification(
+        `<i class="fas fa-check-circle me-1"></i> Example "${result.markdownFile}" successfully loaded${modeMsg}.`,
+        'success'
+      ); // Changed result.filename to result.markdownFile
     } else {
-        throw new Error(result.error || 'Unexpected server response when loading example.');
+      throw new Error(result.error || 'Unexpected server response when loading example.');
     }
-
   } catch (error) {
     console.error('Error loading example:', error);
-    showNotification(`<i class="fas fa-exclamation-triangle me-1"></i> Error loading example: ${error.message}`, 'error');
+    showNotification(
+      `<i class="fas fa-exclamation-triangle me-1"></i> Error loading example: ${error.message}`,
+      'error'
+    );
   } finally {
     if (loadingEl) {
       loadingEl.classList.add('d-none');
@@ -45,7 +51,7 @@ document.getElementById('show-example')?.addEventListener('click', async functio
 });
 
 // Markdown preview
-document.getElementById('markdown-file')?.addEventListener('change', function(e) {
+document.getElementById('markdown-file')?.addEventListener('change', function (e) {
   const file = e.target.files[0];
   const previewContainer = document.getElementById('markdown-preview');
   const previewContent = document.getElementById('preview-content');
@@ -58,7 +64,7 @@ document.getElementById('markdown-file')?.addEventListener('change', function(e)
   if (!previewContainer || !previewContent) return;
 
   const reader = new FileReader();
-  reader.onload = function(event) {
+  reader.onload = function (event) {
     const content = event.target.result;
     try {
       // Use markdown-it for a more accurate preview if available
@@ -70,7 +76,7 @@ document.getElementById('markdown-file')?.addEventListener('change', function(e)
       } else {
         let previewText = content.substring(0, 500);
         if (content.length > 500) previewText += '... (preview truncated)';
-        htmlContent = `<pre class="bg-light p-3 rounded">${previewText.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</pre>`;
+        htmlContent = `<pre class="bg-light p-3 rounded">${previewText.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</pre>`;
       }
 
       const fileSize = (file.size / 1024).toFixed(2) + ' KB';
@@ -82,14 +88,14 @@ document.getElementById('markdown-file')?.addEventListener('change', function(e)
       previewContent.innerHTML = htmlContent + fileInfo;
       previewContainer.classList.remove('d-none');
     } catch (error) {
-      console.error("Error generating preview:", error);
+      console.error('Error generating preview:', error);
       previewContent.innerHTML = `<p class="text-danger">Error generating preview.</p>`;
       previewContainer.classList.remove('d-none');
     }
   };
 
-  reader.onerror = function() {
-    console.error("Error reading file for preview.");
+  reader.onerror = function () {
+    console.error('Error reading file for preview.');
     previewContent.innerHTML = `<p class="text-danger">Could not read file for preview.</p>`;
     previewContainer.classList.remove('d-none');
   };

@@ -9,22 +9,24 @@ const { convertMarkdownToPDF } = require('../services/conversionService'); // Im
 
 // Initialize MarkdownIt with plugins and highlighting options
 const md = new MarkdownIt({
-  html: true,        // Enable HTML tags in source
-  linkify: true,     // Automatically convert URL-like text to links
+  html: true, // Enable HTML tags in source
+  linkify: true, // Automatically convert URL-like text to links
   typographer: true, // Enable some smart quotes substitutions, etc.
   highlight: function (str, lang) {
     if (lang && hljs.getLanguage(lang)) {
       try {
-        return '<pre class="hljs"><code>' +
-               hljs.highlight(str, { language: lang, ignoreIllegals: true }).value +
-               '</code></pre>';
+        return (
+          '<pre class="hljs"><code>' +
+          hljs.highlight(str, { language: lang, ignoreIllegals: true }).value +
+          '</code></pre>'
+        );
       } catch (__) {}
     }
     return '<pre class="hljs"><code>' + md.utils.escapeHtml(str) + '</code></pre>'; // Fallback
-  }
+  },
 }).use(mdFootnote);
 
-module.exports = (PUBLIC_DIR_FOR_UPLOADS) => {
+module.exports = PUBLIC_DIR_FOR_UPLOADS => {
   const router = express.Router();
 
   // Main route - serves index.html from src/public/views/
@@ -41,19 +43,19 @@ module.exports = (PUBLIC_DIR_FOR_UPLOADS) => {
         return res.status(500).json({ success: false, error: 'Error listing files.' });
       }
       const filteredFiles = files.filter(
-        (file) => file.toLowerCase().endsWith('.pdf') || file.toLowerCase().endsWith('.html')
+        file => file.toLowerCase().endsWith('.pdf') || file.toLowerCase().endsWith('.html')
       );
       res.json({ success: true, files: filteredFiles });
     });
   });
-  
+
   // Route to get details of files in the public directory (project root)
   router.get('/public-files', (req, res, next) => {
     try {
       const files = fs.readdirSync(PUBLIC_DIR_FOR_UPLOADS);
       const fileDetails = files
-        .filter((file) => file.endsWith('.html') || file.endsWith('.pdf'))
-        .map((file) => {
+        .filter(file => file.endsWith('.html') || file.endsWith('.pdf'))
+        .map(file => {
           const filePath = path.join(PUBLIC_DIR_FOR_UPLOADS, file);
           const stat = fs.statSync(filePath);
           return {
@@ -72,10 +74,11 @@ module.exports = (PUBLIC_DIR_FOR_UPLOADS) => {
   });
 
   // Route for the example
-  router.get('/example', async (req, res, next) => { // Convert to async function
-    const exampleMdFilename = "example.md";
-    const exampleHtmlFilename = "example.html";
-    const examplePdfFilename = "example.pdf"; // Name for the PDF file
+  router.get('/example', async (req, res, next) => {
+    // Convert to async function
+    const exampleMdFilename = 'example.md';
+    const exampleHtmlFilename = 'example.html';
+    const examplePdfFilename = 'example.pdf'; // Name for the PDF file
     const exampleMdPath = path.join(PUBLIC_DIR_FOR_UPLOADS, exampleMdFilename);
     const exampleHtmlPath = path.join(PUBLIC_DIR_FOR_UPLOADS, exampleHtmlFilename);
     const examplePdfPath = path.join(PUBLIC_DIR_FOR_UPLOADS, examplePdfFilename); // Path for the PDF file
@@ -83,7 +86,8 @@ module.exports = (PUBLIC_DIR_FOR_UPLOADS) => {
     try {
       // 1. Ensure example.md exists
       if (!fs.existsSync(exampleMdPath)) {
-        const defaultContent = "# Markdown Example\n\nThis is an example file for the preview functionality.\n\n## Features\n\n*   Lists\n*   **Bold**\n*   *Italics*\n\n[Visit Google](https://www.google.com)\n\n## Code Block\n\n```javascript\nfunction greet(name) {\n  console.log('Hello, ' + name + '!');\n}\ngreet('World');\n```\n";
+        const defaultContent =
+          "# Markdown Example\n\nThis is an example file for the preview functionality.\n\n## Features\n\n*   Lists\n*   **Bold**\n*   *Italics*\n\n[Visit Google](https://www.google.com)\n\n## Code Block\n\n```javascript\nfunction greet(name) {\n  console.log('Hello, ' + name + '!');\n}\ngreet('World');\n```\n";
         fs.writeFileSync(exampleMdPath, defaultContent, 'utf8');
         console.log(`File '${exampleMdFilename}' created in '${PUBLIC_DIR_FOR_UPLOADS}'`);
       }
@@ -122,14 +126,18 @@ module.exports = (PUBLIC_DIR_FOR_UPLOADS) => {
 
       // 6. Convert example.md to PDF
       const customStylesPath = path.join(__dirname, '..', 'public', 'css', 'custom-styles.css');
-      const conversionOptions = { // Basic options for the example PDF
+      const conversionOptions = {
+        // Basic options for the example PDF
         pageSize: 'A4',
         codeTheme: 'github', // Or the default theme you prefer
         // You can add more options if necessary
       };
-      
+
       // The outputBaseName should not include the .pdf extension, the service adds it.
-      const outputBaseNameForPdf = path.join(PUBLIC_DIR_FOR_UPLOADS, path.basename(exampleMdFilename, '.md'));
+      const outputBaseNameForPdf = path.join(
+        PUBLIC_DIR_FOR_UPLOADS,
+        path.basename(exampleMdFilename, '.md')
+      );
 
       await convertMarkdownToPDF(
         markdownContent,
@@ -145,12 +153,11 @@ module.exports = (PUBLIC_DIR_FOR_UPLOADS) => {
         markdownFile: exampleMdFilename,
         htmlFile: exampleHtmlFilename,
         pdfFile: examplePdfFilename, // Add the PDF file name to the response
-        message: `Example files '${exampleMdFilename}', '${exampleHtmlFilename}', and '${examplePdfFilename}' ensured and ready.`
+        message: `Example files '${exampleMdFilename}', '${exampleHtmlFilename}', and '${examplePdfFilename}' ensured and ready.`,
       });
-
     } catch (error) {
       console.error(`Error processing the /example route:`, error);
-      next(error); 
+      next(error);
     }
   });
 

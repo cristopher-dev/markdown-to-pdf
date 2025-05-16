@@ -2,9 +2,7 @@
 // Bootstrap tooltips initialization
 document.addEventListener('DOMContentLoaded', function () {
   // Initialize tooltips
-  var tooltipTriggerList = [].slice.call(
-    document.querySelectorAll('[data-bs-toggle="tooltip"]')
-  );
+  var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
   var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
     return new bootstrap.Tooltip(tooltipTriggerEl);
   });
@@ -103,16 +101,20 @@ function updateHighlightTheme(selectedThemeOption, currentBsTheme) {
 function applyThemeSetting(theme) {
   // Determine the theme to apply
   // For 'auto', check system preference
-  const effectiveTheme = theme === 'auto' 
-    ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light') 
-    : theme;
-  
+  const effectiveTheme =
+    theme === 'auto'
+      ? window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light'
+      : theme;
+
   // Apply theme to document
   htmlElement.setAttribute('data-bs-theme', effectiveTheme);
   localStorage.setItem('theme', theme); // Store user preference (light/dark/auto/cristopher)
-  
+
   // Update theme toggle icon based on current effective theme
-  if (themeToggle && themeIcon) { // Ensure elements exist
+  if (themeToggle && themeIcon) {
+    // Ensure elements exist
     if (theme === 'auto') {
       themeIcon.className = 'fas fa-magic';
     } else if (theme === 'cristopher') {
@@ -121,7 +123,7 @@ function applyThemeSetting(theme) {
       themeIcon.className = effectiveTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
     }
   }
-  
+
   // Update the active state in dropdown menu
   themeOptions.forEach(option => {
     if (option.dataset.theme === theme) {
@@ -134,7 +136,7 @@ function applyThemeSetting(theme) {
 
 // Register listeners for system color scheme changes
 const systemDarkModeMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-systemDarkModeMediaQuery.addEventListener('change', (e) => {
+systemDarkModeMediaQuery.addEventListener('change', e => {
   const currentTheme = localStorage.getItem('theme') || 'auto';
   if (currentTheme === 'auto') {
     applyThemeSetting('auto'); // Re-apply auto theme when system preference changes
@@ -150,7 +152,7 @@ applyThemeSetting(initialTheme); // Apply initial theme
 
 // Theme dropdown option click handler
 themeOptions.forEach(option => {
-  option.addEventListener('click', function() {
+  option.addEventListener('click', function () {
     const selectedTheme = this.dataset.theme;
     applyThemeSetting(selectedTheme);
   });
@@ -166,15 +168,9 @@ markdownFileInput.addEventListener('change', function (e) {
   if (file) {
     fileNameDisplay.textContent = file.name;
     fileUploadArea.classList.add('border-success');
-    fileUploadArea.classList.remove(
-      'border-primary',
-      'border-info',
-      'bg-info-subtle',
-      'bg-light'
-    );
+    fileUploadArea.classList.remove('border-primary', 'border-info', 'bg-info-subtle', 'bg-light');
   } else {
-    fileNameDisplay.textContent =
-      'Drag your Markdown file here or click to select';
+    fileNameDisplay.textContent = 'Drag your Markdown file here or click to select';
     fileUploadArea.classList.remove('border-success', 'border-info', 'bg-info-subtle');
     fileUploadArea.classList.add('border-primary', 'bg-light');
   }
@@ -191,10 +187,7 @@ async function checkExistingDocuments() {
     const responseData = await response.json();
 
     if (!responseData.success || !Array.isArray(responseData.files)) {
-      console.error(
-        'Server response did not contain a valid file list:',
-        responseData
-      );
+      console.error('Server response did not contain a valid file list:', responseData);
       throw new Error('Invalid file response format.');
     }
 
@@ -204,13 +197,13 @@ async function checkExistingDocuments() {
     let hasDocuments = false;
 
     const uniqueBaseNames = new Set();
-    filesArray.forEach((file) => {
+    filesArray.forEach(file => {
       if (file.endsWith('.html') || file.endsWith('.pdf')) {
         uniqueBaseNames.add(file.split('.').slice(0, -1).join('.'));
       }
     });
 
-    uniqueBaseNames.forEach((baseName) => {
+    uniqueBaseNames.forEach(baseName => {
       updateDocumentsList(baseName + '.md', new Date(), false); // false to not show notification
       hasDocuments = true;
     });
@@ -274,7 +267,7 @@ document.getElementById('upload-form').addEventListener('submit', async function
   if (footerTemplate.trim()) formData.append('footerTemplate', footerTemplate);
 
   const statusElement = document.getElementById('processing-status');
-  const updateStatus = (message) => {
+  const updateStatus = message => {
     if (statusElement) statusElement.textContent = message;
   };
 
@@ -381,7 +374,7 @@ function resetOptions() {
 
 function showNotification(message, type = 'info', duration = 5000) {
   const existingNotifications = document.querySelectorAll('.alert.notification-toast');
-  existingNotifications.forEach((notif) => {
+  existingNotifications.forEach(notif => {
     const bsAlert = bootstrap.Alert.getInstance(notif);
     if (bsAlert) bsAlert.close();
     else notif.remove();
@@ -430,10 +423,7 @@ function updateDocumentsList(filename, creationDate, showNotif = true) {
     }
     if (showNotif && filename.endsWith('.md')) {
       // Only notify if it's a new MD conversion
-      showNotification(
-        `<i class="fas fa-sync-alt me-1"></i> "${baseName}.md" updated.`,
-        'info'
-      );
+      showNotification(`<i class="fas fa-sync-alt me-1"></i> "${baseName}.md" updated.`, 'info');
     }
     return; // Don't add duplicate
   }
@@ -524,7 +514,7 @@ function updateDocumentsList(filename, creationDate, showNotif = true) {
 // Drag and drop functionality
 const dropArea = document.querySelector('.file-upload');
 
-['dragenter', 'dragover', 'dragleave', 'drop'].forEach((eventName) => {
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
   dropArea.addEventListener(eventName, preventDefaults, false);
 });
 
@@ -533,7 +523,7 @@ function preventDefaults(e) {
   e.stopPropagation();
 }
 
-['dragenter', 'dragover'].forEach((eventName) => {
+['dragenter', 'dragover'].forEach(eventName => {
   dropArea.addEventListener(
     eventName,
     () => {
@@ -547,7 +537,7 @@ function preventDefaults(e) {
   );
 });
 
-['dragleave', 'drop'].forEach((eventName) => {
+['dragleave', 'drop'].forEach(eventName => {
   dropArea.addEventListener(
     eventName,
     () => {
@@ -562,7 +552,7 @@ function preventDefaults(e) {
 
 dropArea.addEventListener(
   'drop',
-  (e) => {
+  e => {
     const dt = e.dataTransfer;
     const files = dt.files;
 

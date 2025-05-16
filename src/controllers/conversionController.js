@@ -5,7 +5,7 @@ const { convertMarkdownToPDF } = require('../services/conversionService');
 const { generatePreviewTemplate } = require('../utils/previewTemplate');
 
 // This function needs PUBLIC_DIR_FOR_UPLOADS to know where to save the files
-const handleConversion = (PUBLIC_DIR_FOR_UPLOADS) => async (req, res, next) => {
+const handleConversion = PUBLIC_DIR_FOR_UPLOADS => async (req, res, next) => {
   if (!req.file) {
     return res.status(400).json({ success: false, error: 'No file was uploaded.' });
   }
@@ -32,10 +32,9 @@ const handleConversion = (PUBLIC_DIR_FOR_UPLOADS) => async (req, res, next) => {
       headerTemplate: req.body.headerTemplate,
       footerTemplate: req.body.footerTemplate,
     };
-    
+
     // The path to custom-styles.css must now be relative to the new public location
     const customStylesPath = path.join(__dirname, '..', 'public', 'css', 'custom-styles.css');
-
 
     const results = await convertMarkdownToPDF(
       markdownContent,
@@ -51,7 +50,7 @@ const handleConversion = (PUBLIC_DIR_FOR_UPLOADS) => async (req, res, next) => {
     });
     fs.writeFileSync(results.html, previewContent);
 
-    fs.unlink(filePath, (err) => {
+    fs.unlink(filePath, err => {
       if (err) console.error(`Error deleting temporary file: ${filePath}`, err);
     });
 
@@ -60,19 +59,23 @@ const handleConversion = (PUBLIC_DIR_FOR_UPLOADS) => async (req, res, next) => {
       filename: fileName,
       // Paths returned to the client must be relative to the web server root
       html: path.join('public', path.basename(results.html)), // e.g., /public/name.html
-      pdf: path.join('public', path.basename(results.pdf)),   // e.g., /public/name.pdf
+      pdf: path.join('public', path.basename(results.pdf)), // e.g., /public/name.pdf
     });
   } catch (error) {
     if (req.file && req.file.path && fs.existsSync(req.file.path)) {
-      fs.unlink(req.file.path, (err) => {
-        if (err) console.error(`Error deleting temporary file after conversion error: ${req.file.path}`, err);
+      fs.unlink(req.file.path, err => {
+        if (err)
+          console.error(
+            `Error deleting temporary file after conversion error: ${req.file.path}`,
+            err
+          );
       });
     }
     next(error);
   }
 };
 
-const handleExampleConversion = (PUBLIC_DIR_FOR_UPLOADS) => async (req, res, next) => {
+const handleExampleConversion = PUBLIC_DIR_FOR_UPLOADS => async (req, res, next) => {
   try {
     // README.md is located at the project root
     const readmePath = path.join(__dirname, '..', '..', 'README.md');
@@ -90,7 +93,7 @@ const handleExampleConversion = (PUBLIC_DIR_FOR_UPLOADS) => async (req, res, nex
       codeTheme: codeTheme,
       colorBlindFriendly: colorBlindMode,
     };
-    
+
     const customStylesPath = path.join(__dirname, '..', 'public', 'css', 'custom-styles.css');
 
     const results = await convertMarkdownToPDF(
@@ -118,7 +121,7 @@ const handleExampleConversion = (PUBLIC_DIR_FOR_UPLOADS) => async (req, res, nex
   }
 };
 
-const handleDeleteFiles = (PUBLIC_DIR_FOR_UPLOADS) => (req, res, next) => {
+const handleDeleteFiles = PUBLIC_DIR_FOR_UPLOADS => (req, res, next) => {
   try {
     const basename = req.params.basename;
     if (!basename || typeof basename !== 'string' || basename.includes('..')) {
@@ -130,7 +133,7 @@ const handleDeleteFiles = (PUBLIC_DIR_FOR_UPLOADS) => (req, res, next) => {
     let deletedFiles = [];
     let errors = [];
 
-    [htmlPath, pdfPath].forEach((filePath) => {
+    [htmlPath, pdfPath].forEach(filePath => {
       if (fs.existsSync(filePath)) {
         try {
           fs.unlinkSync(filePath);
@@ -152,7 +155,6 @@ const handleDeleteFiles = (PUBLIC_DIR_FOR_UPLOADS) => (req, res, next) => {
     next(error);
   }
 };
-
 
 module.exports = {
   handleConversion,

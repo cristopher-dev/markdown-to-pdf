@@ -11,7 +11,12 @@ body {
 }
 
 /* Headings */
-h1, h2, h3, h4, h5, h6 {
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
   font-weight: 600;
   margin-top: 1.5em;
   margin-bottom: 0.5em;
@@ -82,7 +87,8 @@ table th {
 }
 
 /* Lists */
-ul, ol {
+ul,
+ol {
   padding-left: 2em;
 }
 
@@ -120,22 +126,29 @@ hr {
     margin: 0;
     padding: 0;
   }
-  
-  pre, code {
+
+  pre,
+  code {
     page-break-inside: avoid;
   }
-  
-  h1, h2, h3, h4, h5, h6 {
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     page-break-after: avoid;
     page-break-inside: avoid;
   }
-  
+
   img {
     page-break-inside: avoid;
     page-break-after: avoid;
   }
-  
-  table, figure {
+
+  table,
+  figure {
     page-break-inside: avoid;
   }
 }

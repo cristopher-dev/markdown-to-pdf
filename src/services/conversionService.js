@@ -24,7 +24,7 @@ const markdownIt = require('markdown-it')({
 const hljs = require('highlight.js');
 
 // Ensure that the public directory exists at the project root
-const ensurePublicDirectoryExists = (outputBaseName) => {
+const ensurePublicDirectoryExists = outputBaseName => {
   const publicDir = path.dirname(outputBaseName);
   if (!fs.existsSync(publicDir)) {
     fs.mkdirSync(publicDir, { recursive: true });

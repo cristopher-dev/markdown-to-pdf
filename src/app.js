@@ -32,7 +32,7 @@ const UPLOADS_DIR = path.join(__dirname, '..', 'uploads'); // Go up one level to
 const CONVERTED_PDF_DIR = path.join(__dirname, '..', 'public'); // Public directory at the root for generated files
 
 // Create necessary directories if they don't exist
-[UPLOADS_DIR, CONVERTED_PDF_DIR].forEach((dir) => {
+[UPLOADS_DIR, CONVERTED_PDF_DIR].forEach(dir => {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
   }

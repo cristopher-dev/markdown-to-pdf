@@ -1,53 +1,55 @@
 /* filepath: /home/markdown-to-pdf/css/style.css */
 body {
-  transition: background-color 0.3s, color 0.3s;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
 }
 
 /* Cristopher theme */
 [data-bs-theme='cristopher'] .markdown-body {
   color: #ffffff;
-  background-color: #0D3A54;
+  background-color: #0d3a54;
 }
 [data-bs-theme='cristopher'] .markdown-body pre {
-  background-color: #12506F !important;
-  border: 1px solid #0D8ABC !important;
+  background-color: #12506f !important;
+  border: 1px solid #0d8abc !important;
 }
 [data-bs-theme='cristopher'] .markdown-body code {
-  background-color: #12506F !important;
+  background-color: #12506f !important;
   color: #a8d8ee !important;
 }
 [data-bs-theme='cristopher'] .bg-light {
-  background-color: #0D3A54 !important;
+  background-color: #0d3a54 !important;
 }
 [data-bs-theme='cristopher'] body {
-  background-color: #0D3A54;
+  background-color: #0d3a54;
   color: #ffffff;
 }
 [data-bs-theme='cristopher'] .text-primary {
-  color: #0D8ABC !important;
+  color: #0d8abc !important;
 }
 [data-bs-theme='cristopher'] .btn-primary {
-  background-color: #0D8ABC;
-  border-color: #0D8ABC;
+  background-color: #0d8abc;
+  border-color: #0d8abc;
   color: #ffffff;
 }
 [data-bs-theme='cristopher'] .btn-primary:hover {
-  background-color: #0A6D8C;
-  border-color: #095E7A;
+  background-color: #0a6d8c;
+  border-color: #095e7a;
 }
 [data-bs-theme='cristopher'] .card {
-  background-color: #12506F;
-  border: 1px solid #0D8ABC;
+  background-color: #12506f;
+  border: 1px solid #0d8abc;
 }
 [data-bs-theme='cristopher'] .list-group-item {
-  background-color: #12506F;
-  border-color: #0D8ABC;
+  background-color: #12506f;
+  border-color: #0d8abc;
   color: #ffffff;
 }
 [data-bs-theme='cristopher'] .form-control,
 [data-bs-theme='cristopher'] .form-select {
-  background-color: #12506F;
-  border-color: #0D8ABC;
+  background-color: #12506f;
+  border-color: #0d8abc;
   color: #ffffff;
 }
 [data-bs-theme='cristopher'] .text-muted {
@@ -57,19 +59,19 @@ body {
 [data-bs-theme='cristopher'] a.link-primary {
   color: #ffffff !important;
   text-decoration: none;
-  border-bottom: 1px solid #0D8ABC;
+  border-bottom: 1px solid #0d8abc;
   transition: all 0.2s ease;
 }
 [data-bs-theme='cristopher'] a.link-secondary:hover,
 [data-bs-theme='cristopher'] a.link-primary:hover {
-  color: #0D8ABC !important;
+  color: #0d8abc !important;
   border-bottom-color: #ffffff;
 }
 [data-bs-theme='cristopher'] .border-primary {
-  border-color: #0D8ABC !important;
+  border-color: #0d8abc !important;
 }
 [data-bs-theme='cristopher'] .file-upload.border-dashed {
-  border: 2px dashed #0D8ABC;
+  border: 2px dashed #0d8abc;
 }
 [data-bs-theme='cristopher'] .file-upload.border-success {
   border-color: #198754 !important;
@@ -78,14 +80,14 @@ body {
   border-color: #0dcaf0 !important;
 }
 [data-bs-theme='cristopher'] .dropdown-menu {
-  background-color: #12506F;
-  border-color: #0D8ABC;
+  background-color: #12506f;
+  border-color: #0d8abc;
 }
 [data-bs-theme='cristopher'] .dropdown-item {
   color: #ffffff;
 }
 [data-bs-theme='cristopher'] .dropdown-item:hover {
-  background-color: #0D8ABC;
+  background-color: #0d8abc;
   color: #ffffff;
 }
 [data-bs-theme='cristopher'] .dropdown-header {
@@ -100,8 +102,8 @@ body {
   box-shadow: 0 6px 8px rgba(0, 0, 0, 0.3);
 }
 [data-bs-theme='cristopher'] .alert-primary {
-  background-color: #0D8ABC;
-  border-color: #0A6D8C;
+  background-color: #0d8abc;
+  border-color: #0a6d8c;
   color: #ffffff;
 }
 
@@ -117,12 +119,12 @@ body {
   color: #0d6efd !important;
 }
 [data-bs-theme='light'] .btn-primary {
-  background-color: #0D8ABC; /* Color personalizado de Cristopher Martinez */
-  border-color: #0D8ABC;
+  background-color: #0d8abc; /* Color personalizado de Cristopher Martinez */
+  border-color: #0d8abc;
 }
 [data-bs-theme='light'] .btn-primary:hover {
-  background-color: #0A6D8C;
-  border-color: #095E7A;
+  background-color: #0a6d8c;
+  border-color: #095e7a;
 }
 [data-bs-theme='light'] .btn-outline-secondary {
   color: #6c757d;
@@ -179,13 +181,13 @@ body {
   color: #58a6ff !important; /* Brighter blue for dark theme */
 }
 [data-bs-theme='dark'] .btn-primary {
-  background-color: #0D8ABC; /* Color personalizado de Cristopher Martinez */
-  border-color: #0D8ABC;
+  background-color: #0d8abc; /* Color personalizado de Cristopher Martinez */
+  border-color: #0d8abc;
   color: #ffffff;
 }
 [data-bs-theme='dark'] .btn-primary:hover {
-  background-color: #0A6D8C;
-  border-color: #095E7A;
+  background-color: #0a6d8c;
+  border-color: #095e7a;
 }
 [data-bs-theme='dark'] .btn-outline-secondary {
   color: #8b949e;
@@ -250,7 +252,9 @@ body {
 }
 
 .file-upload {
-  transition: border-color 0.2s ease-in-out, background-color 0.2s ease-in-out;
+  transition:
+    border-color 0.2s ease-in-out,
+    background-color 0.2s ease-in-out;
 }
 .file-upload.border-dashed {
   border-style: dashed;
@@ -301,7 +305,9 @@ footer .img-thumbnail:hover {
 }
 
 footer .social-links a {
-  transition: transform 0.3s ease, opacity 0.3s ease;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
 }
 
 footer .social-links a:hover {

@@ -9,9 +9,9 @@ const errorHandler = (err, req, res, next) => {
   // If the error is a known type (e.g., from multer or a custom error)
   // you can handle it specifically.
   if (err.message === 'Only Markdown (.md) files are allowed') {
-    return res.status(400).json({ 
-      message: 'File upload error', 
-      error: err.message 
+    return res.status(400).json({
+      message: 'File upload error',
+      error: err.message,
     });
   }
 
@@ -19,7 +19,7 @@ const errorHandler = (err, req, res, next) => {
   if (err.code && err.code.startsWith('LIMIT_')) {
     return res.status(400).json({
       message: 'File upload error',
-      error: `File upload limit exceeded: ${err.field}`
+      error: `File upload limit exceeded: ${err.field}`,
     });
   }
 

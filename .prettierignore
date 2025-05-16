@@ -1,0 +1,11 @@
+node_modules/
+dist/
+build/
+coverage/
+.git/
+*.min.js
+package-lock.json
+yarn.lock
+uploads/
+public/text.pdf
+public/text.html

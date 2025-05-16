@@ -15,7 +15,9 @@
   "scripts": {
     "convert": "node src/services/conversionService.js",
     "start": "node src/server.js",
-    "dev": "nodemon src/server.js"
+    "dev": "nodemon src/server.js",
+    "format": "prettier --write \"**/*.{js,json,css,md,html}\"",
+    "format:check": "prettier --check \"**/*.{js,json,css,md,html}\""
   },
   "dependencies": {
     "dotenv": "^16.5.0",
@@ -27,6 +29,8 @@
     "puppeteer": "^22.0.0"
   },
   "devDependencies": {
-    "nodemon": "^3.0.1"
+    "eslint-config-prettier": "^10.1.5",
+    "nodemon": "^3.0.1",
+    "prettier": "^3.5.3"
   }
 }
