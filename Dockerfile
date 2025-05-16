@@ -46,18 +46,18 @@ RUN npm install --production --ignore-scripts
 
 # Copy the rest of the application code
 COPY src/ ./src/
-COPY views/ ./views/
-COPY assets/ ./assets/
+COPY src/public/views/ ./views/
+COPY src/public/css/ ./assets/css/
+COPY src/public/js/ ./assets/js/
+COPY src/public/fonts/ ./assets/fonts/
 COPY README.md ./
-# COPY .npmrc ./.npmrc # If you have a .npmrc file for specific npm configurations
 
 # Create uploads and public directories if they are managed by the app
 # Ensure these directories are writable by the Node.js process
 RUN mkdir -p uploads public && chmod -R 777 uploads public
 
 # Configurar las fuentes y emojis
-# COPY Fonts/ ./Fonts/ # Original path
-COPY assets/fonts/ ./assets/fonts/
+COPY src/public/fonts/ ./assets/fonts/
 RUN chmod +x ./assets/fonts/setup-fonts.sh && \
     ./assets/fonts/setup-fonts.sh
 
