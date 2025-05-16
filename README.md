@@ -1,5 +1,7 @@
 # Markdown to PDF Converter 📄➡️📑
 
+![Markdown to PDF Converter Screenshot](markdown-to-pdf.png)
+
 ## 🔍 Project Overview
 
 This project is a web application designed to convert Markdown files into PDF documents. It utilizes Node.js with Express for the backend, Puppeteer for PDF generation, and `markdown-it` for Markdown parsing. The frontend is built with HTML, Bootstrap 5, and JavaScript to provide a user-friendly interface.
