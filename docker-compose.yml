@@ -9,35 +9,9 @@ services:
     ports:
       - "3000:3000"
     volumes:
-      # Mount the entire project directory for development (reflects local changes)
-      # For production, you might prefer to only mount specific data directories
       - .:/usr/src/app
-      # Named volume for persistent uploads (optional, if you want uploads to survive container removal)
-      # - uploads_data:/usr/src/app/uploads
-      # Named volume for persistent public files (optional, for generated PDFs/HTML)
-      # - public_data:/usr/src/app/public
-      
-      # Ensure node_modules is not overwritten by the host mount in development
-      # This keeps the container's node_modules separate from any local ones.
       - /usr/src/app/node_modules
-      
     environment:
-      - NODE_ENV=development # Set to 'production' for production deployments
+      - NODE_ENV=development
       - PORT=3000
-      # PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true' # If Chromium is already in the image
-      # PUPPETEER_EXECUTABLE_PATH: /usr/bin/google-chrome-stable # If using system Chrome
-
-    # Restart policy (e.g., always restart if it stops)
-    restart: unless-stopped 
-
-    # Healthcheck (optional, example for a web service)
-    # healthcheck:
-    #   test: ["CMD", "curl", "--fail", "http://localhost:3000"] # Adjust URL/port as needed
-    #   interval: 30s
-    #   timeout: 10s
-    #   retries: 3
-
-# Named volumes (if used above)
-# volumes:
-#   uploads_data:
-#   public_data:
+    restart: unless-stopped
